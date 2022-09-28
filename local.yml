@@ -1,0 +1,60 @@
+version: '3.9'
+
+x-postgres-variables: &postgres-variables
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: examination_management
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: admin
+
+services:
+  postgres:
+    image: 'postgres'
+    container_name: 'examination_postgres'
+    environment:
+      <<: *postgres-variables
+    ports:
+      - '5432:5432'
+    networks:
+      - examination_management_network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  adminer:
+    image: 'adminer'
+    container_name: 'examination_adminer'
+    depends_on:
+      - postgres
+    ports:
+      - '8080:8080'
+    networks:
+      - examination_management_network
+
+  django:
+    build:
+      context: .
+      dockerfile: ./compose/local/Dockerfile
+    container_name: 'examination_management'
+    environment:
+      <<: *postgres-variables
+      ENVIRONMENT: local
+      DJANGO_SECRET: django-insecure-t1uta6$$&bft01r_groil$$6@!klkw$$obl-_sb170no)1cz@1xz#
+      DJANGO_DEBUG: 'true'
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_PASSWORD: admin
+      DJANGO_SUPERUSER_EMAIL: admin@example.com
+    depends_on:
+      - postgres
+    ports:
+      - '8000:8000'
+    networks:
+      - examination_management_network
+    volumes:
+      - .:/app
+
+networks:
+  examination_management_network:
+    driver: bridge
+
+volumes:
+  pgdata:

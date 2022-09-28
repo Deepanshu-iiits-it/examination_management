@@ -1,0 +1,3 @@
+# Django Environment Variables
+DJANGO_SECRET='django-insecure-t1uta6$&bft01r_groil$6@!klkw$obl-_sb170no)1cz@1xz#'
+DJANGO_DEBUG=True

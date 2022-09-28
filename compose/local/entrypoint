@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+python --version
+
+wait_for_postgres() {
+python << END
+import sys
+import psycopg2
+try:
+  psycopg2.connect(
+    host="${POSTGRES_HOST}",
+    port="${POSTGRES_PORT}",
+    user="${POSTGRES_USER}",
+    password="${POSTGRES_PASSWORD}",
+    dbname="${POSTGRES_DB}")
+except psycopg2.OperationError:
+  sys.exit(-1)
+sys.exit(0)
+END
+}
+
+until wait_for_postgres; do
+  >&2 echo "Waiting for Postgrest to start its services..."
+  sleep 2
+done
+>&2 echo "Postgres is available..."
+
+exec "${@}"
