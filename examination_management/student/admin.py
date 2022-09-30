@@ -9,4 +9,3 @@ class StudentAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'roll_no',)
     list_filter = ('name', 'roll_no',)
-
