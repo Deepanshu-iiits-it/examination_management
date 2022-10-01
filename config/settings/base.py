@@ -53,6 +53,8 @@ LOCAL_APPS = [
     'examination_management.student',
     'examination_management.semester',
     'examination_management.batch',
+    'examination_management.grade',
+    'examination_management.subject',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
