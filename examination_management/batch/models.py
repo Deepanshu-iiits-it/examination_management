@@ -8,7 +8,8 @@ from examination_management.core.behaviours import StatusMixin
 
 
 def year_choices():
-    return [(r, r) for r in range(2000, datetime.date.today().year + 1)]
+    # TODO: Can we think of some better logic than this to see the last valid year
+    return [(r, r) for r in range(2000, datetime.date.today().year + 50)]
 
 
 def current_year():
