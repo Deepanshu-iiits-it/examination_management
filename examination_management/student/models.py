@@ -13,7 +13,7 @@ class Student(StatusMixin, TimeStampedModel):
     email = models.EmailField(_('Email'), null=True, blank=True, unique=True)
     roll_no = models.CharField(_('Roll Number'), max_length=100, unique=True,
                                null=True, blank=True, db_index=True)
-    batch = models.OneToOneField('Batch', on_delete=models.CASCADE, blank=True, null=True)
+    batch = models.OneToOneField('batch.Batch', on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return self.roll_no

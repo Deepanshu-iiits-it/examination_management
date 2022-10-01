@@ -323,6 +323,7 @@ medical/media/
 
 .pytest_cache/
 
+*/__pycache__
 
 .env
 .envs/*

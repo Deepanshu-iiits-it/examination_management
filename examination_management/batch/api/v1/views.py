@@ -15,11 +15,11 @@ class BatchCreateView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         validated_data = serializer.validated_data
-        student = Batch.objects.create(**validated_data)
+        batch = Batch.objects.create(**validated_data)
 
         response = {
             'error': False,
-            'data': self.get_serializer(student).data
+            'data': self.get_serializer(batch).data
         }
 
         return Response(response, status=status.HTTP_201_CREATED)
@@ -30,9 +30,9 @@ class BatchDetailView(GenericAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, id=None):
-        student = Batch.objects.get(id=id)
+        batch = Batch.objects.get(id=id)
 
-        if not student:
+        if not batch:
             response = {
                 'error': True,
                 'message': f'Batch with {id} not found!'
@@ -42,7 +42,7 @@ class BatchDetailView(GenericAPIView):
 
         response = {
             'error': False,
-            'data': self.get_serializer(student).data
+            'data': self.get_serializer(batch).data
         }
         return Response(response, status=status.HTTP_200_OK)
 
@@ -53,18 +53,11 @@ class BatchListView(GenericAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
-        roll_no = request.GET.get('roll_no', None)
-        # batch = request.GET.get('batch', None)
-        # branch = request.GET.get('branch', None)
-
-        queryset = self.get_queryset()
-        students = queryset
-        if roll_no:
-            students = queryset.filter(roll_no=roll_no)
+        batches = self.get_queryset()
 
         response = {
             'error': False,
-            'data': self.get_serializer(students, many=True).data
+            'data': self.get_serializer(batches, many=True).data
         }
 
         return Response(response, status=status.HTTP_200_OK)
@@ -79,18 +72,18 @@ class BatchUpdateView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         validated_data = serializer.validated_data
-        student = Batch.objects.get(id=id)
-        if not student:
+        batch = Batch.objects.get(id=id)
+        if not batch:
             response = {
                 'error': True,
                 'message': f'Batch with {id} not found!'
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
-        student = student.update(**validated_data)
+        batch = batch.update(**validated_data)
         response = {
             'error': False,
-            'data': self.get_serializer(student).data
+            'data': self.get_serializer(batch).data
         }
         return Response(response, status=status.HTTP_200_OK)
 
@@ -100,17 +93,17 @@ class BatchDeleteView(GenericAPIView):
     permission_classes = [permissions.AllowAny]
 
     def delete(self, request, id=None):
-        student = Batch.objects.get(id=id)
+        batch = Batch.objects.get(id=id)
 
-        if not student:
+        if not batch:
             response = {
                 'error': True,
                 'message': f'Batch with {id} not found!'
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
-        student.is_deleted = True
-        student.save()
+        batch.is_deleted = True
+        batch.save()
 
         response = {
             'error': False,
