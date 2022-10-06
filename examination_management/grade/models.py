@@ -6,9 +6,11 @@ from examination_management.core.behaviours import StatusMixin
 
 
 class Grade(StatusMixin, TimeStampedModel):
-    student = models.OneToOneField('student.Student', on_delete=models.CASCADE, blank=True, null=True)
-    subject = models.OneToOneField('subject.Subject', on_delete=models.CASCADE, blank=True, null=True)
-    grade = models.CharField(_('Grade'), max_length=100, null=True, blank=True)
+    semester_instance = models.ForeignKey('semester.SemesterInstance', on_delete=models.CASCADE,
+                                          blank=True, null=True, related_name='semester_instance_grade')
+    subject = models.OneToOneField('subject.Subject', on_delete=models.CASCADE,
+                                   blank=True, null=True, related_name='subject_grade')
+    grade = models.CharField(_('Grade'), max_length=2, null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
