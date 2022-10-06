@@ -12,7 +12,7 @@ class Semester(StatusMixin, TimeStampedModel):
     semester = models.IntegerField(_('Semester'), null=True, blank=True)
 
     def __str__(self):
-        return str(self.semester)
+        return str(self.id)
 
 
 class SemesterInstance(StatusMixin, TimeStampedModel):
@@ -27,4 +27,4 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
     status = models.CharField(choices=STATUS_CHOICES, max_length=1, blank=True, null=True)
 
     def __str__(self):
-        return f'{self.student.roll_no} {str(self.semester.semester)}'
+        return str(self.id)

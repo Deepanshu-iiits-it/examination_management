@@ -13,4 +13,4 @@ class Subject(StatusMixin, TimeStampedModel):
     code = models.CharField(_('Code'), max_length=100, unique=True, null=True, blank=True, db_index=True)
     
     def __str__(self):
-        return self.code
+        return str(self.id)
