@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel
+from django.core import validators
 
 from examination_management.core.behaviours import StatusMixin
 
@@ -11,6 +12,13 @@ class Grade(StatusMixin, TimeStampedModel):
     subject = models.OneToOneField('subject.Subject', on_delete=models.CASCADE,
                                    blank=True, null=True, related_name='subject_grade')
     grade = models.CharField(_('Grade'), max_length=2, null=True, blank=True)
+
+    credit = models.IntegerField(_('Credit'), null=True, blank=True, validators=[validators.MinValueValidator(0),
+                                                                                 validators.MaxValueValidator(10)])
+    attendance = models.IntegerField(_('Attendance'), null=True, blank=True, validators=[validators.MinValueValidator(0),
+                                                                                         validators.MaxValueValidator(10)])
+    score = models.IntegerField(_('Score'), null=True, blank=True, validators=[validators.MinValueValidator(0),
+                                                                               validators.MaxValueValidator(10)])
 
     def __str__(self):
         return str(self.id)
