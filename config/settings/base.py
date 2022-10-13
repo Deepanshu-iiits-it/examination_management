@@ -53,6 +53,7 @@ LOCAL_APPS = [
     'examination_management.student',
     'examination_management.semester',
     'examination_management.batch',
+    'examination_management.branch',
     'examination_management.grade',
     'examination_management.subject',
 ]

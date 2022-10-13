@@ -7,17 +7,18 @@ from examination_management.core.behaviours import StatusMixin
 
 class Semester(StatusMixin, TimeStampedModel):
     # TODO:
-    #   - Subject
+    #   - Calculate total credit
 
     semester = models.IntegerField(_('Semester'), null=True, blank=True)
+    credit = models.IntegerField(_('Credit'), default=0)
 
     def __str__(self):
-        return str(self.semester)
+        return f'{self.semester} - {self.id}'
 
 
 class SemesterInstance(StatusMixin, TimeStampedModel):
     # TODO:
-    #   - Result
+    #   - Calculate total cg_sum
 
     semester = models.ForeignKey('semester.Semester', on_delete=models.SET_NULL, blank=True,
                                  null=True, related_name='semester_semester_instance')
@@ -25,6 +26,7 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
                                 null=True, related_name='student_semester_instance')
     STATUS_CHOICES = (('A', 'Appearing'), ('P', 'Passed'), ('R', 'Reappear'))
     status = models.CharField(choices=STATUS_CHOICES, max_length=1, blank=True, null=True)
+    cg_sum = models.IntegerField(_('CG Sum'), default=0)
 
     def __str__(self):
-        return f'{self.student.roll_no} {str(self.semester.semester)}'
+        return str(self.id)

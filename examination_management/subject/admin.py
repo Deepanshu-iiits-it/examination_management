@@ -7,6 +7,6 @@ from examination_management.subject.models import Subject
 class SubjectAdmin(admin.ModelAdmin):
     model = Subject
 
-    # list_display = ('name', 'code',)
-    # list_filter = ('name', 'code',)
+    list_display = ('name', 'code',)
+    list_filter = ('name', 'code',)
 
