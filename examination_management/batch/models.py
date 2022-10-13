@@ -19,3 +19,6 @@ def current_year():
 class Batch(StatusMixin, TimeStampedModel):
     start = models.IntegerField(_('Start Year'), choices=year_choices(), default=current_year())
     end = models.IntegerField(_('End Year'), choices=year_choices(), default=current_year())
+
+    def __str__(self):
+        return str(self.start)

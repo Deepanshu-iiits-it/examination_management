@@ -2,7 +2,7 @@ from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
-from examination_management.student.api.v1.serializers import StudentSerializer
+from examination_management.student.api.v1.serializers import StudentSerializer, StudentDetailSerializer
 from examination_management.student.models import Student
 
 
@@ -42,7 +42,7 @@ class StudentDetailView(GenericAPIView):
 
         response = {
             'error': False,
-            'data': self.get_serializer(student).data
+            'data': StudentDetailSerializer(student).data
         }
         return Response(response, status=status.HTTP_200_OK)
 
@@ -54,17 +54,21 @@ class StudentListView(GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         roll_no = request.GET.get('roll_no', None)
-        # batch = request.GET.get('batch', None)
-        # branch = request.GET.get('branch', None)
+        batch = request.GET.get('batch', None)
+        branch = request.GET.get('branch', None)
 
         queryset = self.get_queryset()
         students = queryset
         if roll_no:
             students = queryset.filter(roll_no=roll_no)
+        if batch:
+            students = queryset.filter(batch__start=batch)
+        if branch:
+            students = queryset.filter(branch__code=branch)
 
         response = {
             'error': False,
-            'data': self.get_serializer(students, many=True).data
+            'data': StudentDetailSerializer(students, many=True).data
         }
 
         return Response(response, status=status.HTTP_200_OK)
