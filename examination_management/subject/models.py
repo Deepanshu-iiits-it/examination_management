@@ -13,5 +13,12 @@ class Subject(StatusMixin, TimeStampedModel):
                                  validators=[validators.MinValueValidator(0), validators.MaxValueValidator(10)])
     semester = models.ForeignKey('semester.Semester', on_delete=models.SET_NULL, blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        # TODO: Find a way to find old and new credit
+        old_credit = self.credit
+        new_credit = kwargs.get('credit', 0)
+        self.semester.update_credit(old_subject_credit=old_credit, new_subject_credit=new_credit)
+        super(Subject, self).save(*args, **kwargs)
+
     def __str__(self):
         return str(self.code)
