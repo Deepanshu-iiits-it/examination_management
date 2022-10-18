@@ -15,7 +15,7 @@ class StudentCreateView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         validated_data = serializer.validated_data
-        student = Student.objects.create(**validated_data)
+        student = Student.objects.get_or_create(**validated_data)
 
         response = {
             'error': False,

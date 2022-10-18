@@ -8,20 +8,23 @@ from examination_management.semester.strategy.semester_status_strategy import De
 
 
 class Semester(StatusMixin, TimeStampedModel):
-    # TODO:
-    #   - Calculate total credit
-
+    code = models.CharField(_('Code'), max_length=100, primary_key=True)
     semester = models.IntegerField(_('Semester'), null=True, blank=True)
     credit = models.IntegerField(_('Credit'), default=0)
+    subject = models.ManyToManyField('subject.Subject', related_name='subject_semester')
 
-    def update_credit(self, old_subject_credit, new_subject_credit):
-        self.credit -= old_subject_credit
-        self.credit += new_subject_credit
+    def update_credit(self):
+        credit = 0
+        for subject in self.subject.all():
+            credit += subject.credit
+        self.credit = credit
 
-        self.save()
+    def save(self, *args, **kwargs):
+        self.update_credit()
+        super(Semester, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.semester} - {self.id}'
+        return str(self.code)
 
 
 class SemesterInstance(StatusMixin, TimeStampedModel):
@@ -33,7 +36,7 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
     student = models.ForeignKey('student.Student', on_delete=models.SET_NULL, blank=True,
                                 null=True, related_name='student_semester_instance')
     STATUS_CHOICES = (('A', 'Appearing'), ('P', 'Passed'), ('R', 'Reappear'))
-    status = models.CharField(choices=STATUS_CHOICES, max_length=1, blank=True, null=True)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=1, default='A')
     cg_sum = models.IntegerField(_('CG Sum'), default=0)
 
     def update_cg_sum(self, old_subject_score, new_subject_score):
