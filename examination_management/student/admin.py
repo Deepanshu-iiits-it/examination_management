@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin import display
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
@@ -23,4 +24,10 @@ class StudentAdmin(ImportExportModelAdmin):
     resource_class = StudentResource
     # model = Student
     list_display = ('name', 'roll_no',)
-    list_filter = ('name', 'roll_no',)
+    list_filter = ('branch__code', 'batch__start',)
+
+    def branch__code(self, obj):
+        return obj.branch.code
+
+    def batch__start(self, obj):
+        return obj.batch.start

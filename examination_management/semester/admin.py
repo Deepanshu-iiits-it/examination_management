@@ -1,20 +1,32 @@
 from django.contrib import admin
 from django.contrib.admin import display
+from import_export import resources, fields
+from import_export.admin import ImportExportModelAdmin
+from import_export.widgets import ForeignKeyWidget
 
 from examination_management.semester.models import Semester, SemesterInstance
+from examination_management.student.models import Student
 
 
 @admin.register(Semester)
 class SemesterAdmin(admin.ModelAdmin):
     model = Semester
 
-    list_display = ('semester',)
-    list_filter = ('semester',)
+    list_display = ('code', 'semester',)
+    list_filter = ('code', 'semester',)
+
+
+class SemesterInstanceResource(resources.ModelResource):
+    student = fields.Field(column_name='student', attribute='student', widget=ForeignKeyWidget(Student, 'roll_no'))
+    semester = fields.Field(column_name='semester', attribute='semester', widget=ForeignKeyWidget(Semester, 'code'))
+
+    class Meta:
+        model = SemesterInstance
 
 
 @admin.register(SemesterInstance)
-class SemesterInstanceAdmin(admin.ModelAdmin):
-    model = SemesterInstance
+class SemesterInstanceAdmin(ImportExportModelAdmin):
+    resource_class = SemesterInstanceResource
 
     list_display = ('get_roll_no', 'get_semester',)
     # list_filter = ('get_roll_no', 'get_semester',)
@@ -25,4 +37,4 @@ class SemesterInstanceAdmin(admin.ModelAdmin):
 
     @display(ordering='semester', description='Semester')
     def get_semester(self, obj):
-        return obj.semester.semster
+        return obj.semester.semester

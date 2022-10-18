@@ -11,8 +11,8 @@ from examination_management.grade.strategy.score_calculator import ScoreCalculat
 class Grade(StatusMixin, TimeStampedModel):
     semester_instance = models.ForeignKey('semester.SemesterInstance', on_delete=models.CASCADE,
                                           blank=True, null=True, related_name='semester_instance_grade')
-    subject = models.OneToOneField('subject.Subject', on_delete=models.CASCADE,
-                                   blank=True, null=True, related_name='subject_grade')
+    subject = models.ForeignKey('subject.Subject', on_delete=models.CASCADE,
+                                blank=True, null=True, related_name='subject_grade')
     grade = models.CharField(_('Grade'), max_length=2, null=True, blank=True)
 
     score = models.IntegerField(_('Score'), null=True, blank=True, validators=[validators.MinValueValidator(0),
@@ -29,7 +29,7 @@ class Grade(StatusMixin, TimeStampedModel):
         # 4. Save the semester_instance
         # 5. Save the grade instance
 
-        old_score = self.score
+        old_score = self.score or 0
         self.score = score_calculator.calculate(self.subject.credit, self.grade)
         new_score = self.score
         self.semester_instance.update_cg_sum(old_subject_score=old_score, new_subject_score=new_score)
