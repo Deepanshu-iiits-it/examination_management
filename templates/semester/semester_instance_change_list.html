@@ -1,0 +1,10 @@
+{% extends "admin/import_export/change_list_import_export.html" %}
+
+{% load static %}
+
+{% block object-tools-items %}
+{{ block.super }}
+<li>
+    <a href="{% url 'admin:semester_instance_template_download' %}" class="btn btn-high btn-success">Download Template</a>
+</li>
+{% endblock %}

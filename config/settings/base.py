@@ -44,7 +44,8 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'corsheaders',
     'import_export',
-    'rest_framework_swagger'
+    'rest_framework_swagger',
+    'django_admin_listfilter_dropdown'
 ]
 
 LOCAL_APPS = [
@@ -76,7 +77,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [str(BASE_DIR / 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

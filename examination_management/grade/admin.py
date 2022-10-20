@@ -1,9 +1,12 @@
 from django.contrib import admin
 from django.contrib.admin import display
+from django.urls import path, re_path
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
+from django_admin_listfilter_dropdown.filters import DropdownFilter
 
+from examination_management.grade.api.v1.views import GradeTemplateDownloadView
 from examination_management.grade.models import Grade
 from examination_management.semester.models import SemesterInstance
 from examination_management.student.models import Student
@@ -19,19 +22,49 @@ class GradeResource(resources.ModelResource):
     class Meta:
         model = Grade
 
+    def dehydrate_student(self, obj):
+        return obj.semester_instance.student.roll_no
+
 
 @admin.register(Grade)
 class GradeAdmin(ImportExportModelAdmin):
     resource_class = GradeResource
 
-    list_display = ('get_roll_no', 'get_code', 'grade')
-    # list_filter = ('get_roll_no', 'get_code', 'grade')
+    list_display = ('student__roll_no', 'subject__code', 'grade')
+    # list_filter = ('semester_instance__semester__semester', 'subject__code')
+    list_filter = (
+        ('semester_instance__semester__semester', DropdownFilter),
+        ('semester_instance__student__branch__code', DropdownFilter),
+        ('semester_instance__student__batch__start', DropdownFilter),
+        ('subject__code', DropdownFilter)
+    )
+
+    change_list_template = 'grade/grade_change_list.html'
 
     @display(ordering='roll_no', description='Roll No')
-    def get_roll_no(self, obj):
+    def student__roll_no(self, obj):
         return obj.semester_instance.student.roll_no
 
     @display(ordering='code', description='Code')
-    def get_code(self, obj):
+    def subject__code(self, obj):
         return obj.subject.code
+
+    def semester_instance__semester__semester(self, obj):
+        return obj.semester_instance.semester.semester
+
+    def subject__code(self, obj):
+        return obj.subject.code
+
+    def semester_instance__student__branch__code(self, obj):
+        return obj.student.branch.code
+
+    def semester_instance__student__batch__start(self, obj):
+        return obj.student.batch.start
+
+    def get_urls(self):
+        urls = super().get_urls()
+        admin_urls = [
+            path('download/', GradeTemplateDownloadView.as_view(), name='grade_template_download'),
+        ]
+        return admin_urls + urls
 
