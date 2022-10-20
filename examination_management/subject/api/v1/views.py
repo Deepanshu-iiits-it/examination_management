@@ -1,7 +1,11 @@
+import tempfile
+
+from django.http import HttpResponse
 from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
+from examination_management.utils.utils import create_empty_excel
 from examination_management.subject.api.v1.serializers import SubjectSerializer
 from examination_management.subject.models import Subject
 
@@ -117,3 +121,14 @@ class SubjectDeleteView(GenericAPIView):
             'message': f'Subject with {id} successfully deleted!'
         }
         return Response(response, status=status.HTTP_200_OK)
+
+
+class SubjectTemplateDownloadView(GenericAPIView):
+
+    def get(self, request):
+        with tempfile.NamedTemporaryFile(prefix=f'Subject', suffix='.xlsx') as fp:
+            create_empty_excel(path=fp.name, columns=['code', 'name', 'credit'])
+            fp.seek(0)
+            response = HttpResponse(fp, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=Subject.xlsx'
+            return response

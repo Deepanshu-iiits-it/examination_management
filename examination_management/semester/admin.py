@@ -4,22 +4,41 @@ from django.urls import path
 from django_admin_listfilter_dropdown.filters import DropdownFilter
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
-from import_export.widgets import ForeignKeyWidget
+from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 
-from examination_management.semester.api.v1.view import SemesterInstanceTemplateDownloadView
+from examination_management.semester.api.v1.view import SemesterInstanceTemplateDownloadView, \
+    SemesterTemplateDownloadView
 from examination_management.semester.models import Semester, SemesterInstance
 from examination_management.student.models import Student
+from examination_management.subject.models import Subject
+
+
+class SemesterResource(resources.ModelResource):
+    subject = fields.Field(column_name='subject', attribute='subject', widget=ManyToManyWidget(Subject, field='code', separator=','))
+
+    class Meta:
+        model = Semester
+        exclude = ('id',)
+        import_id_fields = ('code',)
 
 
 @admin.register(Semester)
-class SemesterAdmin(admin.ModelAdmin):
-    model = Semester
+class SemesterAdmin(ImportExportModelAdmin):
+    resource_class = SemesterResource
 
     list_display = ('code', 'semester',)
     list_filter = (
         ('code', DropdownFilter),
         ('semester', DropdownFilter),
     )
+    change_list_template = 'semester/semester_change_list.html'
+
+    def get_urls(self):
+        urls = super().get_urls()
+        admin_urls = [
+            path('download/', SemesterTemplateDownloadView.as_view(), name='semester_template_download'),
+        ]
+        return admin_urls + urls
 
 
 class SemesterInstanceResource(resources.ModelResource):

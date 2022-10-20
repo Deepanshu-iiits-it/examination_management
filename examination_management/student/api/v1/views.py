@@ -131,9 +131,9 @@ class StudentDeleteView(GenericAPIView):
 class StudentTemplateDownloadView(GenericAPIView):
 
     def get(self, request):
-        with tempfile.NamedTemporaryFile(prefix=f'Student Registration', suffix='.xlsx') as fp:
+        with tempfile.NamedTemporaryFile(prefix=f'Student Admission', suffix='.xlsx') as fp:
             create_empty_excel(path=fp.name, columns=['roll_no', 'name', 'fathers_name', 'email', 'batch', 'branch'])
             fp.seek(0)
             response = HttpResponse(fp, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            response['Content-Disposition'] = 'attachment; filename=Semester Registration.xlsx'
+            response['Content-Disposition'] = 'attachment; filename=Student Admission.xlsx'
             return response
