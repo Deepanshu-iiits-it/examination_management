@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import display
 from django.urls import path
+from django_admin_listfilter_dropdown.filters import DropdownFilter
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
@@ -15,7 +16,10 @@ class SemesterAdmin(admin.ModelAdmin):
     model = Semester
 
     list_display = ('code', 'semester',)
-    list_filter = ('code', 'semester',)
+    list_filter = (
+        ('code', DropdownFilter),
+        ('semester', DropdownFilter),
+    )
 
 
 class SemesterInstanceResource(resources.ModelResource):
@@ -31,7 +35,12 @@ class SemesterInstanceAdmin(ImportExportModelAdmin):
     resource_class = SemesterInstanceResource
 
     list_display = ('get_roll_no', 'get_semester',)
-    # list_filter = ('get_roll_no', 'get_semester',)
+    list_filter = (
+        ('student__roll_no', DropdownFilter),
+        ('semester__semester', DropdownFilter),
+        ('student__batch__start', DropdownFilter),
+        ('student__branch__code', DropdownFilter)
+    )
 
     change_list_template = 'semester/semester_instance_change_list.html'
 
@@ -42,6 +51,18 @@ class SemesterInstanceAdmin(ImportExportModelAdmin):
     @display(ordering='semester', description='Semester')
     def get_semester(self, obj):
         return obj.semester.semester
+
+    def student__roll_no(self, obj):
+        return obj.student.roll_no
+
+    def semester__semester(self, obj):
+        return obj.semester.semester
+
+    def student__batch__start(self, obj):
+        return obj.student.batch.start
+
+    def student__branch__code(self, obj):
+        return obj.student.branch.code
 
     def get_urls(self):
         urls = super().get_urls()

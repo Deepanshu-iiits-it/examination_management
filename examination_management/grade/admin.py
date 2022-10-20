@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import display
-from django.urls import path, re_path
+from django.urls import path
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget

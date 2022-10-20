@@ -1,6 +1,6 @@
 from django.contrib import admin
-from django.contrib.admin import display
 from django.urls import path
+from django_admin_listfilter_dropdown.filters import DropdownFilter
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
@@ -24,9 +24,13 @@ class StudentResource(resources.ModelResource):
 @admin.register(Student)
 class StudentAdmin(ImportExportModelAdmin):
     resource_class = StudentResource
-    # model = Student
+
     list_display = ('name', 'roll_no',)
-    list_filter = ('branch__code', 'batch__start',)
+    list_filter = (
+        ('branch__code', DropdownFilter),
+        ('batch__start', DropdownFilter),
+        ('student_semester_instance__semester__semester', DropdownFilter),
+    )
 
     change_list_template = 'student/student_change_list.html'
 
@@ -35,6 +39,9 @@ class StudentAdmin(ImportExportModelAdmin):
 
     def batch__start(self, obj):
         return obj.batch.start
+
+    def student_semester_instance__semester__semester(self, obj):
+        return obj.student_semester_instance.semester.semester
 
     def get_urls(self):
         urls = super().get_urls()
