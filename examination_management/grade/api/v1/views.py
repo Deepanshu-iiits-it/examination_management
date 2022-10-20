@@ -1,9 +1,14 @@
+import tempfile
+
+from django.http import HttpResponse, HttpResponseRedirect
 from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
 from examination_management.grade.api.v1.serializers import GradeSerializer
 from examination_management.grade.models import Grade
+from examination_management.semester.models import SemesterInstance
+from examination_management.utils.utils import create_excel
 
 
 class GradeCreateView(GenericAPIView):
@@ -117,3 +122,40 @@ class GradeDeleteView(GenericAPIView):
             'message': f'Grade with {id} successfully deleted!'
         }
         return Response(response, status=status.HTTP_200_OK)
+
+
+class GradeTemplateDownloadView(GenericAPIView):
+
+    def get(self, request):
+        semester = int(request.GET.get('semester_instance__semester__semester', None))
+        branch = request.GET.get('semester_instance__student__branch__code', None)
+        batch = request.GET.get('semester_instance__student__batch__start', None)
+        subject = request.GET.get('subject__code', None)
+        if not (semester and branch and batch and subject):
+            return HttpResponseRedirect('../')
+
+        semester_instances = SemesterInstance.objects.filter(semester__semester=semester, student__batch__start=batch, student__branch__code=branch)
+
+        students = []
+        semester_instances_id = []
+        subjects = []
+        grades = []
+        for semester_instance in semester_instances:
+            students.append(semester_instance.student.roll_no)
+            semester_instances_id.append(semester_instance.id)
+            subjects.append(subject)
+            grades.append('')
+
+        data = {
+            'student': students,
+            'semester_instance': semester_instances_id,
+            'subject': subjects,
+            'grade': grades
+        }
+
+        with tempfile.NamedTemporaryFile(prefix=f'{subject} grade sheet', suffix='.xlsx') as fp:
+            create_excel(path=fp.name, data=data)
+            fp.seek(0)
+            response = HttpResponse(fp, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = f'attachment; filename={subject} grade sheet.xlsx'
+            return response

@@ -1,9 +1,14 @@
+import tempfile
+
+from django.http import HttpResponse
+
 from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
 from examination_management.student.api.v1.serializers import StudentSerializer, StudentDetailSerializer
 from examination_management.student.models import Student
+from examination_management.utils.utils import create_empty_excel
 
 
 class StudentCreateView(GenericAPIView):
@@ -121,3 +126,14 @@ class StudentDeleteView(GenericAPIView):
             'message': f'Student with {id} successfully deleted!'
         }
         return Response(response, status=status.HTTP_200_OK)
+
+
+class StudentTemplateDownloadView(GenericAPIView):
+
+    def get(self, request):
+        with tempfile.NamedTemporaryFile(prefix=f'Student Registration', suffix='.xlsx') as fp:
+            create_empty_excel(path=fp.name, columns=['roll_no', 'name', 'fathers_name', 'email', 'batch', 'branch'])
+            fp.seek(0)
+            response = HttpResponse(fp, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=Semester Registration.xlsx'
+            return response
