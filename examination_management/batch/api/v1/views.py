@@ -1,3 +1,7 @@
+import tempfile
+from examination_management.utils.utils import create_empty_excel
+
+from django.http import HttpResponse
 from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -110,3 +114,14 @@ class BatchDeleteView(GenericAPIView):
             'message': f'Batch with {id} successfully deleted!'
         }
         return Response(response, status=status.HTTP_200_OK)
+
+
+class BatchTemplateDownloadView(GenericAPIView):
+
+    def get(self, request):
+        with tempfile.NamedTemporaryFile(prefix='Batch', suffix='.xlsx') as fp:
+            create_empty_excel(path=fp.name, columns=['start', 'end'])
+            fp.seek(0)
+            response = HttpResponse(fp, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=Batch.xlsx'
+            return response

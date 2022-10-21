@@ -253,13 +253,25 @@ class SemesterInstanceDeleteView(GenericAPIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
+class SemesterTemplateDownloadView(GenericAPIView):
+
+    def get(self, request):
+        with tempfile.NamedTemporaryFile(prefix=f'Semester', suffix='.xlsx') as fp:
+            create_empty_excel(path=fp.name, columns=['code', 'semester', 'subject'])
+            fp.seek(0)
+            response = HttpResponse(fp,
+                                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=Semester.xlsx'
+            return response
+
+
 class SemesterInstanceTemplateDownloadView(GenericAPIView):
 
     def get(self, request):
         with tempfile.NamedTemporaryFile(prefix=f'Student Registration', suffix='.xlsx') as fp:
             create_empty_excel(path=fp.name, columns=['student', 'semester'])
             fp.seek(0)
-            response = HttpResponse(fp, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response = HttpResponse(fp,
+                                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = 'attachment; filename=Semester Registration.xlsx'
             return response
-

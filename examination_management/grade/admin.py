@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import display
-from django.urls import path, re_path
+from django.urls import path
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
@@ -23,7 +23,8 @@ class GradeResource(resources.ModelResource):
         model = Grade
 
     def dehydrate_student(self, obj):
-        return obj.semester_instance.student.roll_no
+        if obj.semester_instance:
+            return obj.semester_instance.student.roll_no
 
 
 @admin.register(Grade)
@@ -31,7 +32,6 @@ class GradeAdmin(ImportExportModelAdmin):
     resource_class = GradeResource
 
     list_display = ('student__roll_no', 'subject__code', 'grade')
-    # list_filter = ('semester_instance__semester__semester', 'subject__code')
     list_filter = (
         ('semester_instance__semester__semester', DropdownFilter),
         ('semester_instance__student__branch__code', DropdownFilter),

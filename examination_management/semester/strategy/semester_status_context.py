@@ -10,5 +10,5 @@ class SemesterStatusContext:
     def semester_status_strategy(self, semester_status_strategy):
         self._semester_status_strategy = semester_status_strategy
 
-    def evaluate(self, cg_sum, total_credit):
-        return self._semester_status_strategy.evaluate(cg_sum, total_credit)
+    def evaluate(self, grades):
+        return self._semester_status_strategy.evaluate(grades)
