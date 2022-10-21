@@ -3,7 +3,9 @@
 {% load static %}
 
 {% block object-tools-items %}
-{{ block.super }}
-    <li><a href="{% url 'admin:student_result_download' %}" class="btn btn-high btn-success">Download Result</a></li>
-    <li><a href="{% url 'admin:student_template_download' %}" class="btn btn-high btn-success">Download Template</a></li>
+    {{ block.super }}
+    <div class="btn-group float-right my-2">
+        <a href="{% url 'admin:student_result_download' %}?student_semester_instance__semester__semester={{ request.GET.student_semester_instance__semester__semester }}&branch__code={{ request.GET.branch__code }}&batch__start={{ request.GET.batch__start__exact }}" class="btn btn-outline-success">Download Result</a>
+        <a href="{% url 'admin:student_template_download' %}" class="btn btn-outline-primary">Download Template</a>
+    </div>
 {% endblock %}

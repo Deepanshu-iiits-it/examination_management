@@ -56,8 +56,7 @@ def create_result_excel(path, subjects, students, semester, branch_name, batch_s
 
     sheet.merge_cells(start_row=2, start_column=1, end_row=2, end_column=(2 * len(subjects) + 9))
     cell = sheet.cell(row=2, column=1)
-    cell.value = 'Result Sheet for B.Tech ' + get_roman(
-        semester) + ' Semester ' + branch_name + ', Batch-2020-24- Session May./ June., 2022'
+    cell.value = f'Result Sheet for B.Tech {get_roman(semester)} Semester {branch_name} Batch {batch_start}-{batch_end}'
     cell.font = Font(name="Times New Roman", size=16, bold=True)
     cell.alignment = Alignment(horizontal='center', vertical='center')
 
@@ -151,5 +150,66 @@ def create_result_excel(path, subjects, students, semester, branch_name, batch_s
     cell.value = 'Re-Appears (Course Code)'
     cell.font = Font(name="Times New Roman", size=10)
     cell.alignment = Alignment(textRotation=90, horizontal='center', vertical='center')
+
+    for j, (_, student) in enumerate(students.items()):
+        cell = sheet.cell(row=j + 7, column=1)
+        cell.value = j + 1
+        cell.font = Font(name="Times New Roman", size=10)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        cell = sheet.cell(row=j + 7, column=2)
+        cell.value = student['roll_no']
+        cell.font = Font(name="Times New Roman", size=10)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        cell = sheet.cell(row=j + 7, column=3)
+        cell.value = student['name']
+        cell.font = Font(name="Times New Roman", size=10)
+        cell.alignment = Alignment(horizontal='left', vertical='center')
+
+        cell = sheet.cell(row=j + 7, column=4)
+        cell.value = student['fathers_name']
+        cell.font = Font(name="Times New Roman", size=10)
+        cell.alignment = Alignment(horizontal='left', vertical='center')
+
+        for i, (code, grade) in enumerate(student['grades'].items()):
+            cell = sheet.cell(row=j + 7, column=5 + i * 2)
+            cell.value = grade['grade']
+            cell.font = Font(name="Times New Roman", size=11)
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+
+            cell = sheet.cell(row=j + 7, column=6 + i * 2)
+            cell.value = grade['score']
+            cell.font = Font(name="Times New Roman", size=11)
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        cell = sheet.cell(row=j + 7, column=(2 * len(subjects) + 5))
+        cell.value = student['total_credit']
+        cell.font = Font(name="Times New Roman", size=11)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        cell = sheet.cell(row=j + 7, column=(2 * len(subjects) + 6))
+        cell.value = student['cg_sum']
+        cell.font = Font(name="Times New Roman", size=11)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        cell = sheet.cell(row=j + 7, column=(2 * len(subjects) + 7))
+        if len(student['reappear']):
+            cell.value = 'Re-appear'
+        else:
+            cell.value = student['sgpa']
+        cell.font = Font(name="Times New Roman", size=11)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        # TODO: Calculate Serial Number
+        # cell = sheet.cell(row=j+7,column=(2*len(subjects)+8))
+        # cell.value =
+        # cell.font = Font(name="Times New Roman", size=11)
+        # cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        cell = sheet.cell(row=j + 7, column=(2 * len(subjects) + 9))
+        cell.value = student['reappear']
+        cell.font = Font(name="Times New Roman", size=11)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
 
     wb.save(path)

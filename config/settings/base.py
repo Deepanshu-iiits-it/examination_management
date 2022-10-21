@@ -31,6 +31,10 @@ DEBUG = env('DJANGO_DEBUG', default=True)
 
 
 # Application definition
+PRIORITY_APPS = [
+    'jazzmin'
+]
+
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,11 +49,11 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'import_export',
     'rest_framework_swagger',
-    'django_admin_listfilter_dropdown'
+    'django_admin_listfilter_dropdown',
 ]
 
 LOCAL_APPS = [
-    'examination_management.core',
+    # 'examination_management.core',
     'examination_management.user',
     'examination_management.student',
     'examination_management.semester',
@@ -59,7 +63,7 @@ LOCAL_APPS = [
     'examination_management.subject',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 
 MIDDLEWARE = [
@@ -145,7 +149,7 @@ USE_TZ = True
 STATIC_ROOT = str(BASE_DIR / 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    str(APPS_DIR / 'static'),
+    APPS_DIR / 'static',
 ]
 
 # Media Fies (Images)
@@ -156,3 +160,34 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#Jazzmin Theme Settings
+JAZZMIN_SETTINGS = {
+    # title of the window (Will default to current_admin_site.site_title if absent or None)
+    "site_title": "IIITS College Management System",
+
+    # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_header": "IIIT Sonepat",
+    #
+    # # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_brand": "IIIT Sonepat",
+    #
+    # Logo to use for your site, must be present in static files, used for brand on top left
+    "site_logo": "images/IIITS_logo_70x70.png",
+    #
+    # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
+    "login_logo": "images/IIITS_logo_70x70.png",
+    #
+    # # Logo to use for login form in dark themes (defaults to login_logo)
+    "login_logo_dark": "images/IIITS_logo.png",
+    #
+    # # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
+    "site_icon": "images/IIITS_logo.png",
+
+    # # Welcome text on the login screen
+    "welcome_sign": "Welcome to IIIT Sonepat College Management System",
+    #
+    # # Copyright on the footer
+    "copyright": "Indian Institute of Information Technology, Sonepat",
+}

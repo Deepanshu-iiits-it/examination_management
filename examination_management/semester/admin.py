@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import display
 from django.urls import path
-from django_admin_listfilter_dropdown.filters import DropdownFilter
+
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
@@ -27,10 +27,8 @@ class SemesterAdmin(ImportExportModelAdmin):
     resource_class = SemesterResource
 
     list_display = ('code', 'semester',)
-    list_filter = (
-        ('code', DropdownFilter),
-        ('semester', DropdownFilter),
-    )
+    list_filter = ('code', 'semester')
+
     change_list_template = 'semester/semester_change_list.html'
 
     def get_urls(self):
@@ -54,12 +52,7 @@ class SemesterInstanceAdmin(ImportExportModelAdmin):
     resource_class = SemesterInstanceResource
 
     list_display = ('get_roll_no', 'get_semester',)
-    list_filter = (
-        ('student__roll_no', DropdownFilter),
-        ('semester__semester', DropdownFilter),
-        ('student__batch__start', DropdownFilter),
-        ('student__branch__code', DropdownFilter)
-    )
+    list_filter = ('student__roll_no', 'semester__semester', 'student__batch__start', 'student__branch__code')
 
     change_list_template = 'semester/semester_instance_change_list.html'
 

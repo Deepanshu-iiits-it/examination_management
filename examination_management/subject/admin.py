@@ -20,9 +20,8 @@ class SubjectAdmin(ImportExportModelAdmin):
     resource_class = SubjectResource
 
     list_display = ('name', 'code',)
-    list_filter = (
-        ('subject_semester__semester', DropdownFilter),
-    )
+    list_filter = ('subject_semester__semester',)
+
     change_list_template = 'subject/subject_change_list.html'
 
     def subject_semester__semester(self, obj):
