@@ -63,7 +63,7 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
         grades = []
         for subject in subject_instances.all():
             grades.append(Grade.objects.get(semester_instance=self.id, subject=subject.code).grade)
-        
+
         if len(grades) == expected_grades:
             semester_status_context = SemesterStatusContext(DefaultSemesterStatusStrategy())
             self.status = semester_status_context.evaluate(grades)

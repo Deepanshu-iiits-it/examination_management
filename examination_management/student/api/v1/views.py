@@ -1,14 +1,17 @@
 import tempfile
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
+from examination_management.batch.models import Batch
+from examination_management.branch.models import Branch
+from examination_management.subject.models import Subject
 from examination_management.student.api.v1.serializers import StudentSerializer, StudentDetailSerializer
 from examination_management.student.models import Student
-from examination_management.utils.utils import create_empty_excel
+from examination_management.utils.utils import create_empty_excel, create_result_excel
 
 
 class StudentCreateView(GenericAPIView):
@@ -137,3 +140,45 @@ class StudentTemplateDownloadView(GenericAPIView):
             response = HttpResponse(fp, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = 'attachment; filename=Student Admission.xlsx'
             return response
+
+
+class StudentResultTemplateDownloadView(GenericAPIView):
+
+    def get(self, request):
+        semester = int(request.GET.get('student_semester_instance__semester__semester', None))
+        branch = request.GET.get('branch__code', None)
+        batch = request.GET.get('batch__start', None)
+
+        if not (semester and branch and batch):
+            return HttpResponseRedirect('../')
+
+        branch_name = Branch.objects.get(code=branch)
+        batch = Batch.objects.get(start=batch)
+
+        subjects = {}
+        subject_instances = Subject.objects.filter(subject_semester__semester=semester)
+        for subject in subject_instances.all():
+            subjects[subject.code] = {
+                'name': subject.name,
+                'code': subject.code,
+                'credit': subject.credit
+            }
+
+        students = {}
+        students_instances = Student.objects.filter(student_semester_instance__semster__semester=semester,
+                                                    branch__code=branch, batch__start=batch)
+        for student in students_instances.all():
+            students[student.roll_no] = {
+                'name': student.name,
+                'fathers_name': student.fathers_name,
+                'roll_no': student.roll_no
+            }
+
+        xlsx_name = f'Result Sheet {semester} Semester Batch {batch.start}-{batch.end}'
+        with tempfile.NamedTemporaryFile(prefix=xlsx_name, suffix='.xlsx') as fp:
+            create_result_excel(fp.name, subjects, students, semester, branch_name, batch.start, batch.end)
+            fp.seek(0)
+            response = HttpResponse(fp, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = f'attachment; filename={xlsx_name}.xlsx'
+            return response
+

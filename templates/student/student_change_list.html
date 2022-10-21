@@ -4,7 +4,6 @@
 
 {% block object-tools-items %}
 {{ block.super }}
-<li>
-    <a href="{% url 'admin:student_template_download' %}" class="btn btn-high btn-success">Download Template</a>
-</li>
+    <li><a href="{% url 'admin:student_result_download' %}" class="btn btn-high btn-success">Download Result</a></li>
+    <li><a href="{% url 'admin:student_template_download' %}" class="btn btn-high btn-success">Download Template</a></li>
 {% endblock %}
