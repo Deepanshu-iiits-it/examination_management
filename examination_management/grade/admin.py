@@ -32,12 +32,8 @@ class GradeAdmin(ImportExportModelAdmin):
     resource_class = GradeResource
 
     list_display = ('student__roll_no', 'subject__code', 'grade')
-    list_filter = (
-        ('semester_instance__semester__semester', DropdownFilter),
-        ('semester_instance__student__branch__code', DropdownFilter),
-        ('semester_instance__student__batch__start', DropdownFilter),
-        ('subject__code', DropdownFilter)
-    )
+    list_filter = ('semester_instance__semester__semester', 'semester_instance__student__branch__code',
+                  'semester_instance__student__batch__start', 'subject__code')
 
     change_list_template = 'grade/grade_change_list.html'
 

@@ -1,13 +1,13 @@
 from django.contrib import admin
 from django.urls import path
-from django_admin_listfilter_dropdown.filters import DropdownFilter
+
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
 
 from examination_management.batch.models import Batch
 from examination_management.branch.models import Branch
-from examination_management.student.api.v1.views import StudentTemplateDownloadView
+from examination_management.student.api.v1.views import StudentTemplateDownloadView, StudentResultTemplateDownloadView
 from examination_management.student.models import Student
 
 
@@ -25,12 +25,8 @@ class StudentResource(resources.ModelResource):
 class StudentAdmin(ImportExportModelAdmin):
     resource_class = StudentResource
 
-    list_display = ('name', 'roll_no',)
-    list_filter = (
-        ('branch__code', DropdownFilter),
-        ('batch__start', DropdownFilter),
-        ('student_semester_instance__semester__semester', DropdownFilter),
-    )
+    list_display = ('name', 'roll_no', 'fathers_name')
+    list_filter = ('branch__code', 'batch__start', 'student_semester_instance__semester__semester')
 
     change_list_template = 'student/student_change_list.html'
 
@@ -47,5 +43,6 @@ class StudentAdmin(ImportExportModelAdmin):
         urls = super().get_urls()
         admin_urls = [
             path('download/', StudentTemplateDownloadView.as_view(), name='student_template_download'),
+            path('result/download/', StudentResultTemplateDownloadView.as_view(), name='student_result_download'),
         ]
         return admin_urls + urls

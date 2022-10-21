@@ -3,8 +3,8 @@
 {% load static %}
 
 {% block object-tools-items %}
-{{ block.super }}
-<li>
-    <a href="{% url 'admin:grade_template_download' %}?semester_instance__semester__semester={{ request.GET.semester_instance__semester__semester }}&semester_instance__student__branch__code={{ request.GET.semester_instance__student__branch__code }}&semester_instance__student__batch__start={{ request.GET.semester_instance__student__batch__start }}&subject__code={{ request.GET.subject__code }}" class="btn btn-high btn-success">Download Template</a>
-</li>
+    {{ block.super }}
+    <div class="btn-group float-right my-2">
+        <a href="{% url 'admin:grade_template_download' %}?semester_instance__semester__semester={{ request.GET.semester_instance__semester__semester }}&semester_instance__student__branch__code={{ request.GET.semester_instance__student__branch__code }}&semester_instance__student__batch__start={{ request.GET.semester_instance__student__batch__start__exact }}&subject__code={{ request.GET.subject__code }}" class="btn btn-outline-primary">Download Template</a>
+    </div>
 {% endblock %}

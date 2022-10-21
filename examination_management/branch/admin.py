@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.urls import path
-from django_admin_listfilter_dropdown.filters import DropdownFilter
 
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
@@ -20,10 +19,7 @@ class BranchAdmin(ImportExportModelAdmin):
     change_list_template = 'branch/branch_change_list.html'
 
     list_display = ('branch', 'code',)
-    list_filter = (
-        ('branch', DropdownFilter),
-        ('code', DropdownFilter),
-    )
+    list_filter = ('branch', 'code')
 
     def get_urls(self):
         urls = super().get_urls()

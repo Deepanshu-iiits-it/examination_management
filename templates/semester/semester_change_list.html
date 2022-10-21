@@ -3,8 +3,8 @@
 {% load static %}
 
 {% block object-tools-items %}
-{{ block.super }}
-<li>
-    <a href="{% url 'admin:semester_template_download' %}" class="btn btn-high btn-success">Download Template</a>
-</li>
+    {{ block.super }}
+    <div class="btn-group float-right my-2">
+        <a href="{% url 'admin:semester_template_download' %}" class="btn btn-outline-primary">Download Template</a>
+    </div>
 {% endblock %}
