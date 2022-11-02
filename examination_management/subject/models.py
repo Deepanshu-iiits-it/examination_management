@@ -11,6 +11,7 @@ class Subject(StatusMixin, TimeStampedModel):
     name = models.CharField(_('Name'), max_length=100, null=True, blank=True)
     credit = models.IntegerField(_('Credit'), null=True, blank=True, default=0,
                                  validators=[validators.MinValueValidator(0), validators.MaxValueValidator(10)])
+    is_elective = models.BooleanField(_('Is Elective'), default=False)
 
     def __str__(self):
         return str(self.code)

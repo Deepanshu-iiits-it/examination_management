@@ -4,7 +4,6 @@ from django.urls import path
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
-from django_admin_listfilter_dropdown.filters import DropdownFilter
 
 from examination_management.grade.api.v1.views import GradeTemplateDownloadView
 from examination_management.grade.models import Grade

@@ -127,7 +127,7 @@ class SubjectTemplateDownloadView(GenericAPIView):
 
     def get(self, request):
         with tempfile.NamedTemporaryFile(prefix=f'Subject', suffix='.xlsx') as fp:
-            create_empty_excel(path=fp.name, columns=['code', 'name', 'credit'])
+            create_empty_excel(path=fp.name, columns=['code', 'name', 'credit', 'is_elective'])
             fp.seek(0)
             response = HttpResponse(fp, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = 'attachment; filename=Subject.xlsx'

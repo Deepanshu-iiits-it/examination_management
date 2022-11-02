@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.urls import path
-from django_admin_listfilter_dropdown.filters import DropdownFilter
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
@@ -19,7 +18,7 @@ class SubjectResource(resources.ModelResource):
 class SubjectAdmin(ImportExportModelAdmin):
     resource_class = SubjectResource
 
-    list_display = ('name', 'code',)
+    list_display = ('name', 'code', 'is_elective')
     list_filter = ('subject_semester__semester',)
 
     change_list_template = 'subject/subject_change_list.html'

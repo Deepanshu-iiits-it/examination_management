@@ -11,7 +11,7 @@ from examination_management.semester.strategy.semester_status_strategy import De
 class Semester(StatusMixin, TimeStampedModel):
     code = models.CharField(_('Code'), max_length=100, primary_key=True)
     semester = models.IntegerField(_('Semester'), null=True, blank=True)
-    credit = models.IntegerField(_('Credit'), default=0)
+    credit = models.IntegerField(_('Credits'), default=0)
     subject = models.ManyToManyField('subject.Subject', related_name='subject_semester')
 
     def update_credit(self):
@@ -43,10 +43,12 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
     def save(self, *args, **kwargs):
         semester = self.semester.semester
         student = self.student.roll_no
-
-        semester_instance = SemesterInstance.objects.get(semester__semester=semester, student__roll_no=student)
-        if semester_instance.id != self.id:
-            raise ValueError('Student already registered with in this semester.')
+        try:
+            semester_instance = SemesterInstance.objects.get(semester__semester=semester, student__roll_no=student)
+            if semester_instance and semester_instance.id != self.id:
+                raise ValueError('Student already registered with in this semester.')
+        except SemesterInstance.DoesNotExist:
+            pass
         super(SemesterInstance, self).save(*args, **kwargs)
 
     def update_cg_sum(self, old_subject_score, new_subject_score):
@@ -58,15 +60,18 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
         self.cg_sum -= old_subject_score
         self.cg_sum += new_subject_score
 
-        subject_instances = SemesterInstance.objects.get(id=self.id).semester.subject
-        expected_grades = len(self.semester.subject.all())
-        grades = []
-        for subject in subject_instances.all():
-            grades.append(Grade.objects.get(semester_instance=self.id, subject=subject.code).grade)
+        try:
+            subject_instances = SemesterInstance.objects.get(id=self.id).semester.subject
+            expected_grades = len(self.semester.subject.all())
+            grades = []
+            for subject in subject_instances.all():
+                grades.append(Grade.objects.get(semester_instance=self.id, subject=subject.code).grade)
 
-        if len(grades) == expected_grades:
-            semester_status_context = SemesterStatusContext(DefaultSemesterStatusStrategy())
-            self.status = semester_status_context.evaluate(grades)
+            if len(grades) == expected_grades:
+                semester_status_context = SemesterStatusContext(DefaultSemesterStatusStrategy())
+                self.status = semester_status_context.evaluate(grades)
+        except Grade.DoesNotExist:
+            pass
 
         self.save()
 

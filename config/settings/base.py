@@ -49,7 +49,7 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'import_export',
     'rest_framework_swagger',
-    'django_admin_listfilter_dropdown',
+    # 'django_admin_listfilter_dropdown',
 ]
 
 LOCAL_APPS = [

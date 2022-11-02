@@ -129,7 +129,7 @@ class GradeTemplateDownloadView(GenericAPIView):
     def get(self, request):
         semester = int(request.GET.get('semester_instance__semester__semester', None))
         branch = request.GET.get('semester_instance__student__branch__code', None)
-        batch = request.GET.get('semester_instance__student__batch__start', None)
+        batch = int(request.GET.get('semester_instance__student__batch__start', None))
         subject = request.GET.get('subject__code', None)
         if not (semester and branch and batch and subject):
             return HttpResponseRedirect('../')
