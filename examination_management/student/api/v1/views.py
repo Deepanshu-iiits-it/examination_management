@@ -184,7 +184,7 @@ class StudentResultTemplateDownloadView(GenericAPIView):
             subject_instances = semester_instance.semester.subject
             reappear = []
             for subject in subject_instances.all():
-                if grades[subject.code]['grade'] >= 'F':
+                if grades[subject.code]['grade'] and grades[subject.code]['grade'] >= 'F':
                     reappear.append(subject.code)
             reappear = ','.join(reappear)
 

@@ -56,7 +56,14 @@ def create_result_excel(path, subjects, students, semester, branch_name, batch_s
 
     sheet.merge_cells(start_row=2, start_column=1, end_row=2, end_column=(2 * len(subjects) + 9))
     cell = sheet.cell(row=2, column=1)
-    cell.value = f'Result Sheet for B.Tech {get_roman(semester)} Semester {branch_name} Batch {batch_start}-{batch_end}'
+    session=''
+    if(semester%2==0):
+        session='May./June.'
+    else:
+        session='Nov./Dec.'
+    year=batch_start+int(0.5*semester)
+    print(year)
+    cell.value = f'Result Sheet for B.Tech {get_roman(semester)} Semester {branch_name} Batch {batch_start}-{batch_end} Session {session}, {year}'
     cell.font = Font(name="Times New Roman", size=16, bold=True)
     cell.alignment = Alignment(horizontal='center', vertical='center')
 
@@ -90,6 +97,7 @@ def create_result_excel(path, subjects, students, semester, branch_name, batch_s
     sheet.cell(row=6, column=4).alignment = Alignment(textRotation=90, horizontal='center', vertical='center')
 
     subject_codes = list(subjects.keys())
+    subject_codes.sort()
     # TO GIVE HEADINGS FOR EACH SUBJECT
     for j in range(len(subjects)):
         i = j * 2
