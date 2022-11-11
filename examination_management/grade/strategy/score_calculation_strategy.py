@@ -14,22 +14,14 @@ class DefaultScoreCalculationStrategy(ScoreCalculationStrategy):
             score = 10 * credit
         elif grade == 'A':
             score = 9 * credit
-        elif grade == 'B+':
-            score = 8 * credit
         elif grade == 'B':
-            score = 7 * credit
-        elif grade == 'C+':
-            score = 6 * credit
+            score = 8 * credit
         elif grade == 'C':
-            score = 5 * credit
-        elif grade == 'D+':
-            score = 4 * credit
+            score = 7 * credit
         elif grade == 'D':
-            score = 3 * credit
-        elif grade == 'E+':
-            score = 2 * credit
+            score = 6 * credit
         elif grade == 'E':
-            score = 1 * credit
+            score = 5 * credit
         else:
             score = 0
         return score

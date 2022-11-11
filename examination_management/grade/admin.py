@@ -32,7 +32,7 @@ class GradeAdmin(ImportExportModelAdmin):
 
     list_display = ('student__roll_no', 'subject__code', 'grade')
     list_filter = ('semester_instance__semester__semester', 'semester_instance__student__branch__code',
-                  'semester_instance__student__batch__start', 'subject__code')
+                   'semester_instance__student__batch__start', 'subject__code')
 
     change_list_template = 'grade/grade_change_list.html'
 
@@ -62,4 +62,3 @@ class GradeAdmin(ImportExportModelAdmin):
             path('download/', GradeTemplateDownloadView.as_view(), name='grade_template_download'),
         ]
         return admin_urls + urls
-

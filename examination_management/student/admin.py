@@ -7,7 +7,8 @@ from import_export.widgets import ForeignKeyWidget
 
 from examination_management.batch.models import Batch
 from examination_management.branch.models import Branch
-from examination_management.student.api.v1.views import StudentTemplateDownloadView, StudentResultTemplateDownloadView
+from examination_management.student.api.v1.views import StudentTemplateDownloadView, StudentResultTemplateDownloadView, \
+    StudentDMCDownloadView
 from examination_management.student.models import Student
 
 
@@ -43,6 +44,7 @@ class StudentAdmin(ImportExportModelAdmin):
         urls = super().get_urls()
         admin_urls = [
             path('download/', StudentTemplateDownloadView.as_view(), name='student_template_download'),
+            path('dmc/download/', StudentDMCDownloadView.as_view(), name='student_dmc_download'),
             path('result/download/', StudentResultTemplateDownloadView.as_view(), name='student_result_download'),
         ]
         return admin_urls + urls

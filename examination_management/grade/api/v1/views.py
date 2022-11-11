@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from examination_management.grade.api.v1.serializers import GradeSerializer
 from examination_management.grade.models import Grade
 from examination_management.semester.models import SemesterInstance
+from examination_management.subject.models import Subject
 from examination_management.utils.utils import create_excel
 
 
@@ -134,7 +135,16 @@ class GradeTemplateDownloadView(GenericAPIView):
         if not (semester and branch and batch and subject):
             return HttpResponseRedirect('../')
 
-        semester_instances = SemesterInstance.objects.filter(semester__semester=semester, student__batch__start=batch, student__branch__code=branch)
+        subject_instance = Subject.objects.get(code=subject)
+        if not subject_instance.is_elective:
+            semester_instances = SemesterInstance.objects.filter(semester__semester=semester,
+                                                                 student__batch__start=batch,
+                                                                 student__branch__code=branch)
+        else:
+            semester_instances = SemesterInstance.objects.filter(semester__semester=semester,
+                                                                 student__batch__start=batch,
+                                                                 student__branch__code=branch,
+                                                                 elective=subject_instance)
 
         students = []
         semester_instances_id = []
@@ -156,6 +166,7 @@ class GradeTemplateDownloadView(GenericAPIView):
         with tempfile.NamedTemporaryFile(prefix=f'{subject} grade sheet', suffix='.xlsx') as fp:
             create_excel(path=fp.name, data=data)
             fp.seek(0)
-            response = HttpResponse(fp, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response = HttpResponse(fp,
+                                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = f'attachment; filename={subject} grade sheet.xlsx'
             return response

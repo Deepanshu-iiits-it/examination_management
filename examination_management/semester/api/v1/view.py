@@ -7,8 +7,9 @@ from rest_framework.response import Response
 
 from examination_management.semester.api.v1.serializers import *
 from examination_management.semester.models import Semester, SemesterInstance
+from examination_management.student.models import Student
 
-from examination_management.utils.utils import create_empty_excel
+from examination_management.utils.utils import create_excel, create_empty_excel
 
 
 class SemesterCreateView(GenericAPIView):
@@ -268,8 +269,26 @@ class SemesterTemplateDownloadView(GenericAPIView):
 class SemesterInstanceTemplateDownloadView(GenericAPIView):
 
     def get(self, request):
+        batch = int(request.GET.get('student__batch__start__exact', None))
+        branch = request.GET.get('student__branch__code', None)
+
+        data = {
+            'student': [],
+            'semester': [],
+            'elective': [],
+        }
+        try:
+            student_instances = Student.objects.filter(branch__code=branch,
+                                                       batch__start=batch)
+            for student in student_instances.all():
+                data['student'].append(student.roll_no)
+                data['semester'].append('')
+                data['elective'].append('')
+
+        except SemesterInstance.DoesNotExist:
+            pass
         with tempfile.NamedTemporaryFile(prefix=f'Student Registration', suffix='.xlsx') as fp:
-            create_empty_excel(path=fp.name, columns=['student', 'semester'])
+            create_excel(path=fp.name, data=data)
             fp.seek(0)
             response = HttpResponse(fp,
                                     content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

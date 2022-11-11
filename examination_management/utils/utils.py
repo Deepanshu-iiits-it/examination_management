@@ -89,7 +89,7 @@ def create_result_excel(path, subjects, students, semester, branch_name, batch_s
     sheet.cell(row=6, column=3).font = Font(name="Times New Roman", size=10)
     sheet.cell(row=6, column=4).alignment = Alignment(textRotation=90, horizontal='center', vertical='center')
 
-    subject_codes = list(subjects.keys())
+    subject_codes = sorted(list(subjects.keys()))
     # TO GIVE HEADINGS FOR EACH SUBJECT
     for j in range(len(subjects)):
         i = j * 2
@@ -172,14 +172,14 @@ def create_result_excel(path, subjects, students, semester, branch_name, batch_s
         cell.font = Font(name="Times New Roman", size=10)
         cell.alignment = Alignment(horizontal='left', vertical='center')
 
-        for i, (code, grade) in enumerate(student['grades'].items()):
+        for i, code in enumerate(subject_codes):
             cell = sheet.cell(row=j + 7, column=5 + i * 2)
-            cell.value = grade['grade']
+            cell.value = student['grades'][code]['grade']
             cell.font = Font(name="Times New Roman", size=11)
             cell.alignment = Alignment(horizontal='center', vertical='center')
 
             cell = sheet.cell(row=j + 7, column=6 + i * 2)
-            cell.value = grade['score']
+            cell.value = student['grades'][code]['score']
             cell.font = Font(name="Times New Roman", size=11)
             cell.alignment = Alignment(horizontal='center', vertical='center')
 
