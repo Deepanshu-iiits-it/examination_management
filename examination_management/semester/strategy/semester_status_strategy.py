@@ -10,6 +10,6 @@ class SemesterStatusStrategy(abc.ABC):
 class DefaultSemesterStatusStrategy(SemesterStatusStrategy):
     def evaluate(self, grades):
         for grade in grades:
-            if grade >= 'F':
+            if grade and grade >= 'F':
                 return 'R'
         return 'P'
