@@ -1,12 +1,9 @@
 import tempfile
+from collections import OrderedDict
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import get_template
-
-from io import BytesIO
-from xhtml2pdf import pisa
-from django.template.loader import get_template
-from html import escape
+from django.shortcuts import render
 
 from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView
@@ -35,7 +32,7 @@ def _get_semester_data(semester, branch, batch):
         if not subject.is_elective:
             core_credit += subject.credit
 
-    students = {}
+    students = OrderedDict()
     students_instances = Student.objects.filter(student_semester_instance__semester__semester=semester,
                                                 branch__code=branch, batch__start=batch)
     for student in students_instances.all():
@@ -46,7 +43,7 @@ def _get_semester_data(semester, branch, batch):
             credit += elective.credit
         sgpa = round(semester_instance.cg_sum / credit, 4)
 
-        grades = {}
+        grades = OrderedDict()
         reappear = []
         grade_instances = Grade.objects.filter(semester_instance=semester_instance.id)
         for grade in grade_instances.all():
@@ -65,7 +62,6 @@ def _get_semester_data(semester, branch, batch):
                     'grade': '',
                     'score': 0
                 }
-
         students[student.roll_no] = {
             'name': student.name,
             'fathers_name': student.fathers_name,
@@ -242,20 +238,18 @@ class StudentDMCDownloadView(GenericAPIView):
 
         subjects, students = _get_semester_data(semester, branch, batch)
 
-        pdf_name = f'DMC Semester {semester} Branch {branch} Batch {batch}.pdf'
+        title = f'DMC Semester {semester} Branch {branch} Batch {batch}.pdf'
         template_path = 'student/dmc/student_dmc_till_4_sem_template.html'
+
+        full_barnch = Branch.objects.get(code=branch).branch
 
         template = get_template(template_path)
         context = {
-            'subjects': subjects,
-            'students': students
+            'subjects': sorted(subjects.items()),
+            'students': students,
+            'title': title,
+            'branch': full_barnch,
+            'session': f'November/December, {batch}' if semester % 2 else f'May/June, {batch}'
         }
-        html = template.render(context)
-        result = BytesIO()
 
-        pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-        if not pdf.err:
-            response = HttpResponse(result.getvalue(), content_type='application/pdf')
-        else:
-            response = HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
-        return response
+        return HttpResponse(template.render(context))

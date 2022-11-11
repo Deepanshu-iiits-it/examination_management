@@ -1,215 +1,161 @@
+{% load student_extras %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DMC Template Till 4th Semester</title>
+    <title>{{ title }}</title>
     <style>
-      @page {
-          size: A4;
-      }
-      html, body {
-          margin: 0;
-          padding: 0;
-      }
-      .dmc {
-        width: 794px;
-        height: 1123px;
-        padding-top: 200px;
-        padding-bottom: 20px;
-        position: relative;
-        box-sizing: border-box;
-        margin: 0;
-        page-break-after: always;
-      }
-      table {
-        width: 90%;
-        margin: auto;
-        -pdf-keep-in-frame-mode: overflow;
-      }
+        @page {
+            size: A4;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        .dmc {
+            width: 794px;
+            height: 1123px;
+            padding-top: 200px;
+            padding-bottom: 20px;
+            position: relative;
+            box-sizing: border-box;
+            margin: 0;
+            page-break-after: always;
+        }
+        table {
+            width: 90%;
+            margin: auto;
+            -pdf-keep-in-frame-mode: overflow;
+        }
 
-      .type1 {
-        margin-bottom: 5mm;
-        padding: 0;
-      }
-      .type1 td, .type1 th {
-        padding-left: 0;
-        padding-right: 0;
-        margin: 0;
-        padding-bottom: 10px;
-        padding-top: 5px;
-      }
+        .type1 {
+            margin-bottom: 5mm;
+            padding: 0;
+        }
+        .type1 td, .type1 th {
+            padding-left: 0;
+            padding-right: 0;
+            margin: 0;
+            padding-bottom: 10px;
+            padding-top: 5px;
+        }
 
-      .type2 {
-        border: 2px solid black;
-        border-collapse: collapse;
-        padding: 5px;
-        margin-bottom: 5mm;
-      }
-      .type2 td,
-      .type2 th {
-        border-right: 1.5px solid black;
-        border-top: 1px solid black;
-        border-collapse: collapse;
-        padding-left: 8px;
-        padding-top: 1px;
-        padding-bottom: 1px;
-        text-align: center;}
+        .type2 {
+            border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            margin-bottom: 5mm;
+        }
+        .type2 td,
+        .type2 th {
+            border-right: 1.5px solid black;
+            border-top: 1px solid black;
+            border-collapse: collapse;
+            padding-left: 8px;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            text-align: center;}
 
-      .type3 {
-        position: absolute;
-        bottom: 10px;
-        left: 1cm;
-      }
+        .type3 {
+            position: absolute;
+            bottom: 10px;
+            left: 1cm;
+        }
     </style>
 </head>
 <body>
+{% for roll_no, student in students.items %}
+    {% if student.reappear|length == 0 %}
+        <div class="dmc">
+            <b>
+                <table class="type1">
+                    <tr>
+                        <td>Name</td>
+                        <td>:</td>
+                        <td>{{ student.name }}</td>
+                        <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        <td>Sr.No.</td>
+                        <td>:</td>
+                        <td style="text-align: right">2022</td>
+                    </tr>
+                    <tr>
+                        <td>Father's Name</td>
+                        <td>:</td>
+                        <td>{{ student.fathers_name|title }}</td>
+                        <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        <td>Roll No.</td>
+                        <td>:</td>
+                        <td style="text-align: right">{{ roll_no }}</td>
+                    </tr>
+                    <tr>
+                        <td>Programme</td>
+                        <td>:</td>
+                        <td>Bachelor of Technology</td>
+                        <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        <td>Department</td>
+                        <td>:</td>
+                        <td style="text-align: right">{{ branch }}</td>
+                    </tr>
+                    <tr>
+                        <td>Semester</td>
+                        <td>:</td>
+                        <td>IV</td>
+                        <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        <td>Session</td>
+                        <td>:</td>
+                        <td style="text-align: right">{{ session }}</td>
+                    </tr>
+                </table>
+            </b>
+            <table class="type2">
+                <tr>
+                    <th>Sr.No.</th>
+                    <th colspan="2">Course Code & Course Name</th>
+                    <th>Credits</th>
+                    <th>Grade</th>
+                </tr>
+                {% for subject_code, subject in subjects %}
+                    {% if student.grades|hash:subject_code|hash:'grade'|length > 0 %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ subject_code }}</td>
+                            <td style="text-align: left">{{ subject.name }}</td>
+                            <td>{{ subject.credit }}</td>
+                            <td>{{ student.grades|hash:subject_code|hash:'grade' }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
 
-    <div class="dmc">
-        <b>
-      <table class="type1">
-        <tr>
-          <td>Name</td>
-          <td>:</td>
-          <td>Ram</td>
-          <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-          <td>Sr.No.</td>
-          <td>:</td>
-          <td style="text-align: right">2022</td>
-        </tr>
-        <tr>
-          <td>Father's Name</td>
-          <td>:</td>
-          <td>Mohan Singh</td>
-          <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-          <td>Roll No.</td>
-          <td>:</td>
-          <td style="text-align: right">12047076</td>
-        </tr>
-        <tr>
-          <td>Programme</td>
-          <td>:</td>
-          <td>Bachelor of Technology</td>
-          <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-          <td>Department</td>
-          <td>:</td>
-          <td style="text-align: right">Computer Science Engineering</td>
-        </tr>
-        <tr>
-          <td>Semester</td>
-          <td>:</td>
-          <td>IV</td>
-          <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-          <td>Session</td>
-          <td>:</td>
-          <td style="text-align: right">May/June, 2022</td>
-        </tr>
-      </table>
-    </b>
-        <table class="type2">
-      <tr>
-        <th>Sr.No.</th>
-        <th colspan="2">Course Code & Course Name</th>
-        <th>Credits</th>
-        <th>Grade</th>
-      </tr>
-      <tr>
-        <td>1</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <tr>
-        <td>8</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <tr>
-        <td>9</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <tr>
-        <td>10</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <tr>
-        <td colspan="3" style="text-align: left">
-          <b>Total No. of Credits/Grade Points</b>
-        </td>
-        <td>23.0</td>
-        <td>198</td>
-      </tr>
-      <tr>
-        <td colspan="3" style="text-align: left">
-          <b>Semester Grade Point Average (SGPA)</b>
-        </td>
-        <td colspan="2">8.2250</td>
-      </tr>
-    </table>
-        <b>
-      <table class="type3">
-        <tr>
-          <td>Place: Sonepat</td>
-          <td style="text-align: right">In-charge Examinations</td>
-        </tr>
-        <tr>
-          <td>Dated:</td>
-          <td></td>
-        </tr>
-      </table>
-    </b>
-    </div>
-
+                <tr>
+                    <td colspan="3" style="text-align: left">
+                        <b>Total No. of Credits/Grade Points</b>
+                    </td>
+                    <td>{{ student.total_credit }}</td>
+                    <td>{{ student.cg_sum }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: left">
+                        <b>Semester Grade Point Average (SGPA)</b>
+                    </td>
+                    <td colspan="2">{{ student.sgpa }}</td>
+                </tr>
+            </table>
+            <b>
+                <table class="type3">
+                    <tr>
+                        <td>Place: Sonepat</td>
+                        <td style="text-align: right">In-charge Examinations</td>
+                    </tr>
+                    <tr>
+                        <td>Dated:</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </b>
+        </div>
+    {% endif %}
+{% endfor %}
 </body>
 </html>
 
