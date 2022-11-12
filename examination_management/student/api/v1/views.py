@@ -16,7 +16,7 @@ from examination_management.branch.models import Branch
 from examination_management.subject.models import Subject
 from examination_management.student.api.v1.serializers import StudentSerializer, StudentDetailSerializer
 from examination_management.student.models import Student
-from examination_management.utils.utils import create_empty_excel, create_result_excel
+from examination_management.utils.utils import create_empty_excel, create_result_excel, get_roman
 
 
 def _get_semester_data(semester, branch, batch):
@@ -52,7 +52,7 @@ def _get_semester_data(semester, branch, batch):
                 'score': grade.score
             }
 
-            if grade.grade >= 'F':
+            if grade.grade and grade.grade >= 'F':
                 reappear.append(grade.subject.code)
         reappear = ','.join(reappear)
 
@@ -239,17 +239,28 @@ class StudentDMCDownloadView(GenericAPIView):
         subjects, students = _get_semester_data(semester, branch, batch)
 
         title = f'DMC Semester {semester} Branch {branch} Batch {batch}.pdf'
-        template_path = 'student/dmc/student_dmc_till_4_sem_template.html'
-
+        template_path= 'student/dmc/student_dmc_till_4_sem_template.html'
         full_barnch = Branch.objects.get(code=branch).branch
-
-        template = get_template(template_path)
+        year = batch + semester/2
         context = {
             'subjects': sorted(subjects.items()),
             'students': students,
             'title': title,
             'branch': full_barnch,
-            'session': f'November/December, {batch}' if semester % 2 else f'May/June, {batch}'
+            'semester': get_roman(semester),
+            'session': f'Nov./Dec., {year}' if semester % 2 else f'May./June., {year}'
         }
+        if(semester>4):
+            template_path = 'student/dmc/student_dmc_after_4_sem_template.html'
+            context = {
+                'subjects': sorted(subjects.items()),
+                'students': students,
+                'title': title,
+                'branch': full_barnch,
+                'semester': get_roman(semester),
+                'session': f'Nov./Dec., {year}' if semester % 2 else f'May./June., {year}'
+            }
+        template = get_template(template_path)
+        
 
         return HttpResponse(template.render(context))
