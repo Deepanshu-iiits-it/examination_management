@@ -241,7 +241,8 @@ class StudentDMCDownloadView(GenericAPIView):
         title = f'DMC Semester {semester} Branch {branch} Batch {batch}.pdf'
         template_path= 'student/dmc/student_dmc_till_4_sem_template.html'
         full_barnch = Branch.objects.get(code=branch).branch
-        year = batch + semester/2
+        year = batch + semester//2
+        prevsemesters={}
         context = {
             'subjects': sorted(subjects.items()),
             'students': students,
