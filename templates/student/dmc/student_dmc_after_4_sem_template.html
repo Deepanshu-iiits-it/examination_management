@@ -166,17 +166,15 @@
                 <th>Total Credits</th>
                 <th>SGPA</th>
               </tr>
-              {% comment %} {% for subject_code, subject in subjects %}
-                    {% if student.grades|hash:subject_code|hash:'grade'|length > 0 %}
+              {% for sem_no, sem in student.prev_sems %}
                         <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ subject_code }}</td>
-                            <td>{{ subject.credit }}</td>
-                            <td>{{ student.grades|hash:subject_code|hash:'grade' }}</td>
+                            <td>{{ sem.session }}</td>
+                            <td>{{ sem.roman_sem }}</td>
+                            <td>{{ sem.credit }}</td>
+                            <td>{{ sem.sgpa }}</td>
                         </tr>
-                    {% endif %}
-                {% endfor %} {% endcomment %}
-              <tr>
+                {% endfor %}
+              {% comment %} <tr>
                 <td>Nov./Dec., 2019</td>
                 <td>I</td>
                 <td>23</td>
@@ -223,16 +221,16 @@
                 <td>VIII</td>
                 <td>23</td>
                 <td>8.4348</td>
-              </tr>
+              </tr> {% endcomment %}
             </table>
         
             <b>
               <table class="type5">
                 <tr>
-                  <td>Total Credits :</td>
+                  <td>Total Credits : {{student.ttotal_credits}}</td>
                 </tr>
                 <tr>
-                  <td>Cumulative Grade Point Average (CGPA) :</td>
+                  <td>Cumulative Grade Point Average (CGPA) : {{student.cgpa}}</td>
                 </tr>
               </table>
             </b>

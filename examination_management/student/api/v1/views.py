@@ -18,6 +18,13 @@ from examination_management.student.api.v1.serializers import StudentSerializer,
 from examination_management.student.models import Student
 from examination_management.utils.utils import create_empty_excel, create_result_excel, get_roman
 
+def get_roman(n):
+    if n <= 0 or n > 10:
+        return None
+    r = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
+    return r[n - 1]
+
+grade_scores = {"A+":10, "A":9, "B":8, "C":7, "D":6, "E":5}
 
 def _get_semester_data(semester, branch, batch):
     subjects = {}
@@ -36,12 +43,52 @@ def _get_semester_data(semester, branch, batch):
     students_instances = Student.objects.filter(student_semester_instance__semester__semester=semester,
                                                 branch__code=branch, batch__start=batch)
     for student in students_instances.all():
+        
+        #For previous semesters
+        semester_instances = SemesterInstance.objects.filter(student__roll_no=student.roll_no)
+        prev_sems= {}
+        ttotal_credits=0
+        cgpa=0
+        for sem in semester_instances:
+            c=0
+            gp=0
+            sem_no = sem.semester.semester
+            if(sem_no > semester):
+                continue
+            for _ in sem.semester.subject.all():
+                c += _.credit
+            for elective in sem.elective.all():
+                c += elective.credit
+            ttotal_credits+=c
+            grade_instances = Grade.objects.filter(semester_instance=sem.id)
+            for grade in grade_instances.all():                
+                gp += grade_scores.get(str(grade.grade), 0) * grade.subject.credit
+
+                #TODO: Reappear handling in DMC
+                # if grade.grade and grade.grade >= 'F':
+                #     reappear.append(grade.subject.code)
+
+            sgpa = round(gp / c, 4)
+            cgpa+=sgpa
+            year =  batch + sem_no//2
+            prev_sems[sem_no] = {
+                'session': f'Nov./Dec., {year}' if sem_no % 2 else f'May./June., {year}',
+                'roman_sem': get_roman(sem_no),
+                'credit': c,
+                'sgpa': sgpa,
+            }
+
+        #For current semester
         semester_instance = SemesterInstance.objects.get(student__roll_no=student.roll_no,
                                                          semester__semester=semester)
-        credit = core_credit
+        credit = 0
+        grade_point=0
+        
+        for _ in semester_instance.semester.subject.all():
+            credit += _.credit
         for elective in semester_instance.elective.all():
             credit += elective.credit
-        sgpa = round(semester_instance.cg_sum / credit, 4)
+        # sgpa = round(semester_instance.cg_sum / credit, 4)
 
         grades = OrderedDict()
         reappear = []
@@ -51,10 +98,13 @@ def _get_semester_data(semester, branch, batch):
                 'grade': grade.grade,
                 'score': grade.score
             }
+            grade_point += grade_scores.get(str(grade.grade), 0) * grade.subject.credit
 
             if grade.grade and grade.grade >= 'F':
                 reappear.append(grade.subject.code)
         reappear = ','.join(reappear)
+
+        sgpa = round(grade_point / credit, 4)
 
         for subject in subject_instances.all():
             if not grades.get(subject.code, None):
@@ -68,9 +118,12 @@ def _get_semester_data(semester, branch, batch):
             'roll_no': student.roll_no,
             'grades': grades,
             'total_credit': credit,
-            'cg_sum': semester_instance.cg_sum,
+            'cg_sum': grade_point,
             'sgpa': sgpa,
-            'reappear': reappear
+            'reappear': reappear,
+            'prev_sems': sorted(prev_sems.items()),
+            'ttotal_credits': ttotal_credits,
+            'cgpa': round(cgpa/semester, 4),
         }
 
     return subjects, students
@@ -242,7 +295,7 @@ class StudentDMCDownloadView(GenericAPIView):
         template_path= 'student/dmc/student_dmc_till_4_sem_template.html'
         full_barnch = Branch.objects.get(code=branch).branch
         year = batch + semester//2
-        prevsemesters={}
+        
         context = {
             'subjects': sorted(subjects.items()),
             'students': students,
