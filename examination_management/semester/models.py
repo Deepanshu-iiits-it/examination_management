@@ -11,7 +11,7 @@ from examination_management.subject.models import Subject
 
 class Semester(StatusMixin, TimeStampedModel):
     code = models.CharField(_('Code'), max_length=100, primary_key=True)
-    semester = models.IntegerField(_('Semester'), null=True, blank=True)
+    semester = models.IntegerField(_('Semester'))
     subject = models.ManyToManyField('subject.Subject', related_name='subject_semester')
 
     def __str__(self):
