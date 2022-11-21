@@ -36,11 +36,11 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
         semester = self.semester.semester
         student = self.student.roll_no
         try:
-            semester_instance = SemesterInstance.objects.get(student__roll_no=student, status='A',
-                                                             semester__semester__lt=semester)
+            semester_instance = SemesterInstance.objects.filter(student__roll_no=student, status='A',
+                                                                semester__semester__lt=semester)
             if semester_instance:
-                semester_instance[-1].status = 'P'
-                semester_instance[-1].save()
+                semester_instance[len(semester_instance.all()) - 1].status = 'P'
+                semester_instance[len(semester_instance.all()) - 1].save()
 
         except SemesterInstance.DoesNotExist:
             pass
