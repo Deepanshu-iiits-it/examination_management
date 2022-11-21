@@ -32,9 +32,9 @@ class Grade(StatusMixin, TimeStampedModel):
         old_score = self.score or 0
         self.score = score_calculator.calculate(self.subject.credit, self.grade)
         new_score = self.score
-        self.semester_instance.update_cg_sum(old_subject_score=old_score, new_subject_score=new_score)
-
         super(Grade, self).save(*args, **kwargs)
+
+        self.semester_instance.update_cg_sum(old_subject_score=old_score, new_subject_score=new_score)
 
     def __str__(self):
         return str(self.id)

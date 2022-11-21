@@ -166,7 +166,7 @@
                 <th>Total Credits</th>
                 <th>SGPA</th>
               </tr>
-              {% for sem_no, sem in student.prev_sems %}
+              {% for sem_no, sem in student.prev_semesters %}
                         <tr>
                             <td>{{ sem.session }}</td>
                             <td>{{ sem.roman_sem }}</td>
@@ -174,60 +174,12 @@
                             <td>{{ sem.sgpa }}</td>
                         </tr>
                 {% endfor %}
-              {% comment %} <tr>
-                <td>Nov./Dec., 2019</td>
-                <td>I</td>
-                <td>23</td>
-                <td>8.4348</td>
-              </tr>
-              <tr>
-                <td>Nov./Dec., 2019</td>
-                <td>II</td>
-                <td>23</td>
-                <td>8.4348</td>
-              </tr>
-              <tr>
-                <td>Nov./Dec., 2019</td>
-                <td>III</td>
-                <td>23</td>
-                <td>8.4348</td>
-              </tr>
-              <tr>
-                <td>Nov./Dec., 2019</td>
-                <td>IV</td>
-                <td>23</td>
-                <td>8.4348</td>
-              </tr>
-              <tr>
-                <td>Nov./Dec., 2019</td>
-                <td>V</td>
-                <td>23</td>
-                <td>8.4348</td>
-              </tr>
-              <tr>
-                <td>Nov./Dec., 2019</td>
-                <td>VI</td>
-                <td>23</td>
-                <td>8.4348</td>
-              </tr>
-              <tr>
-                <td>Nov./Dec., 2019</td>
-                <td>VII</td>
-                <td>23</td>
-                <td>8.4348</td>
-              </tr>
-              <tr>
-                <td>Nov./Dec., 2019</td>
-                <td>VIII</td>
-                <td>23</td>
-                <td>8.4348</td>
-              </tr> {% endcomment %}
             </table>
         
             <b>
               <table class="type5">
                 <tr>
-                  <td>Total Credits : {{student.ttotal_credits}}</td>
+                  <td>Total Credits : {{student.total_credits}}</td>
                 </tr>
                 <tr>
                   <td>Cumulative Grade Point Average (CGPA) : {{student.cgpa}}</td>
@@ -253,89 +205,3 @@
 {% endfor %}
 </body>
 </html>
-
-
-
-
-      
-    {% comment %} </style>
-  </head>
-  <body>
-    <b>
-      <table class="type1">
-        <tr>
-          <td>Name</td>
-          <td>:</td>
-          <td>Ram</td>
-          <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-          <td>Sr.No.</td>
-          <td>:</td>
-          <td style="text-align: right">2022</td>
-        </tr>
-        <tr>
-          <td>Father's Name</td>
-          <td>:</td>
-          <td>Mohan Singh</td>
-          <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-          <td>Roll No.</td>
-          <td>:</td>
-          <td style="text-align: right">12047076</td>
-        </tr>
-        <tr>
-          <td>Programme</td>
-          <td>:</td>
-          <td>Bachelor of Technology</td>
-          <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-          <td>Department</td>
-          <td>:</td>
-          <td style="text-align: right">Computer Science Engineering</td>
-        </tr>
-        <tr>
-          <td>Semester</td>
-          <td>:</td>
-          <td>IV</td>
-          <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-          <td>Session</td>
-          <td>:</td>
-          <td style="text-align: right">May/June, 2022</td>
-        </tr>
-      </table>
-    </b>
-    <table class="type2">
-      <tr>
-        <th>Sr.No.</th>
-        <th colspan="2">Course Code & Course Name</th>
-        <th>Credits</th>
-        <th>Grade</th>
-      </tr>
-      <tr>
-        <td>1</td>
-        <td>ITC 401</td>
-        <td style="text-align: left">Operating System</td>
-        <td>3.0</td>
-        <td>A</td>
-      </tr>
-      <!--<tr><td>2</td><td>ITC 401</td><td style="text-align: left">Operating System</td><td>3.0</td><td>A</td></tr>
-        <tr><td>3</td><td>ITC 401</td><td style="text-align: left">Operating System</td><td>3.0</td><td>A</td></tr>
-        <tr><td>4</td><td>ITC 401</td><td style="text-align: left">Operating System</td><td>3.0</td><td>A</td></tr>
-        <tr><td>5</td><td>ITC 401</td><td style="text-align: left">Operating System</td><td>3.0</td><td>A</td></tr>
-        <tr><td>6</td><td>ITC 401</td><td style="text-align: left">Operating System</td><td>3.0</td><td>A</td></tr>
-        <tr><td>7</td><td>ITC 401</td><td style="text-align: left">Operating System</td><td>3.0</td><td>A</td></tr>
-        <tr><td>8</td><td>ITC 401</td><td style="text-align: left">Operating System</td><td>3.0</td><td>A</td></tr>
-        <tr><td>9</td><td>ITC 401</td><td style="text-align: left">Operating System</td><td>3.0</td><td>A</td></tr>
-        <tr><td>10</td><td>ITC 401</td><td style="text-align: left">Operating System</td><td>3.0</td><td>A</td></tr>
-        -->
-      <tr>
-        <td colspan="3" style="text-align: left">
-          <b>Total No. of Credits/Grade Points</b>
-        </td>
-        <td>23.0</td>
-        <td>198</td>
-      </tr>
-      <tr>
-        <td colspan="3" style="text-align: left">
-          <b>Semester Grade Point Average (SGPA)</b>
-        </td>
-        <td colspan="2">8.2250</td>
-      </tr>
-    </table> {% endcomment %}
