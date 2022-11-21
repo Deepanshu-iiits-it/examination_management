@@ -20,6 +20,7 @@ class GradeResource(resources.ModelResource):
 
     class Meta:
         model = Grade
+        import_id_fields = ('semester_instance', 'subject')
 
     def dehydrate_student(self, obj):
         if obj.semester_instance:
@@ -30,17 +31,30 @@ class GradeResource(resources.ModelResource):
 class GradeAdmin(ImportExportModelAdmin):
     resource_class = GradeResource
 
-    list_display = ('student__roll_no', 'subject__code', 'grade')
+    list_display = ('student__name', 'student__roll_no', 'student__batch',
+                    'semester__semester', 'subject__code', 'grade')
     list_filter = ('semester_instance__semester__semester', 'semester_instance__student__branch__code',
                    'semester_instance__student__batch__start', 'subject__code')
 
     change_list_template = 'grade/grade_change_list.html'
 
+    @display(ordering='name', description='Name')
+    def student__name(self, obj):
+        return obj.semester_instance.student.name
+
     @display(ordering='roll_no', description='Roll No')
     def student__roll_no(self, obj):
         return obj.semester_instance.student.roll_no
 
-    @display(ordering='code', description='Code')
+    @display(ordering='batch', description='Batch')
+    def student__batch(self, obj):
+        return obj.semester_instance.student.batch.start
+
+    @display(ordering='semester', description='Semester')
+    def semester__semester(self, obj):
+        return obj.semester_instance.semester.semester
+
+    @display(ordering='code', description='Subject Code')
     def subject__code(self, obj):
         return obj.subject.code
 

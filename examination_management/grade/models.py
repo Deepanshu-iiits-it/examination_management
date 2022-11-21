@@ -39,3 +39,6 @@ class Grade(StatusMixin, TimeStampedModel):
     def __str__(self):
         return str(self.id)
 
+    class Meta:
+        unique_together = (('semester_instance', 'subject'),)
+

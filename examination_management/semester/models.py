@@ -37,20 +37,35 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
         semester = self.semester.semester
         student = self.student.roll_no
         try:
-            semester_instance = SemesterInstance.objects.get(semester__semester=semester, student__roll_no=student)
-            if semester_instance and semester_instance.id != self.id:
-                raise ValueError('Student already registered with in this semester.')
-
-            semester_instance = SemesterInstance.objects.get(student__roll_no=student, status='A')
-            if semester_instance and semester_instance.id != self.id:
-                raise ValueError('Student has not passed his/her previous semester.')
+            semester_instance = SemesterInstance.objects.get(student__roll_no=student, status='A',
+                                                             semester__semester__lt=semester)
             if semester_instance:
-                self.check_electives(self.semester.code)
+                semester_instance[-1].status = 'P'
+                semester_instance[-1].save()
 
         except SemesterInstance.DoesNotExist:
             pass
 
         super(SemesterInstance, self).save(*args, **kwargs)
+
+    # def save(self, *args, **kwargs):
+    #     semester = self.semester.semester
+    #     student = self.student.roll_no
+    #     try:
+    #         semester_instance = SemesterInstance.objects.get(semester__semester=semester, student__roll_no=student)
+    #         if semester_instance and semester_instance.id != self.id:
+    #             raise ValueError('Student already registered with in this semester.')
+    #
+    #         semester_instance = SemesterInstance.objects.get(student__roll_no=student, status='A')
+    #         if semester_instance and semester_instance.id != self.id:
+    #             raise ValueError('Student has not passed his/her previous semester.')
+    #         if semester_instance:
+    #             self.check_electives(self.semester.code)
+    #
+    #     except SemesterInstance.DoesNotExist:
+    #         pass
+    #
+    #     super(SemesterInstance, self).save(*args, **kwargs)
 
     def check_electives(self, semester_code):
         elective_instances = Subject.objects.filter(subject_semester__code=semester_code, is_elective=True)
@@ -76,20 +91,37 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
         self.cg_sum -= old_subject_score
         self.cg_sum += new_subject_score
 
+        has_reappear = False
         try:
-            subject_instances = SemesterInstance.objects.get(id=self.id).semester.subject
-            expected_grades = len(self.semester.subject.all())
-            grades = []
-            for subject in subject_instances.all():
-                grades.append(Grade.objects.get(semester_instance=self.id, subject=subject.code).grade)
-
-            if len(grades) == expected_grades:
-                semester_status_context = SemesterStatusContext(DefaultSemesterStatusStrategy())
-                self.status = semester_status_context.evaluate(grades)
+            core_subjects = SemesterInstance.objects.get(id=self.id).semester.subject
+            for subject in core_subjects.all():
+                print(subject.subject_grade)
+                if subject.subject_grade == 'F':
+                    has_reappear = True
+        except Grade.DoesNotExist:
+            electives = SemesterInstance.objects.get(id=self.id).elective
+            for elective in electives.all():
+                print(elective.subject_grade)
+                if elective.subject_grade == 'F':
+                    has_reappear = True
         except Grade.DoesNotExist:
             pass
 
+        safe_status = 'A'
+        if not has_reappear:
+            try:
+                semester_instances = SemesterInstance.objects.get(student=self.student, semester__semester__gt=self.semester.semester)
+                if len(semester_instances.all()):
+                    safe_status = 'P'
+            except SemesterInstance.DoesNotExist:
+                pass
+        # print('###########################')
+        print(has_reappear)
+        self.status = 'R' if has_reappear else safe_status
         self.save()
 
     def __str__(self):
         return str(self.id)
+
+    class Meta:
+        unique_together = (('student', 'semester'),)

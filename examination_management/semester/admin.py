@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import display
 from django.urls import path
+from django.utils.translation import gettext_lazy as _
 
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
@@ -14,7 +15,8 @@ from examination_management.subject.models import Subject
 
 
 class SemesterResource(resources.ModelResource):
-    subject = fields.Field(column_name='subject', attribute='subject', widget=ManyToManyWidget(Subject, field='code', separator=','))
+    subject = fields.Field(column_name='subject', attribute='subject',
+                           widget=ManyToManyWidget(Subject, field='code', separator=','))
 
     class Meta:
         model = Semester
@@ -45,16 +47,40 @@ class SemesterInstanceResource(resources.ModelResource):
 
     class Meta:
         model = SemesterInstance
+        import_id_fields = ('student', 'semester',)
+
+
+class SemesterInstanceReappearListFilter(admin.SimpleListFilter):
+    title = _('Reappear')
+    parameter_name = 'reappear'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('odd', _('Odd semester')),
+            ('even', _('Even semester'))
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'odd':
+            return queryset.filter(status='R', semester__semester__iregex='[1357]')
+        elif self.value() == 'even':
+            return queryset.filter(status='R', semester__semester__iregex='[2468]')
 
 
 @admin.register(SemesterInstance)
 class SemesterInstanceAdmin(ImportExportModelAdmin):
     resource_class = SemesterInstanceResource
 
-    list_display = ('get_roll_no', 'get_semester',)
-    list_filter = ('student__roll_no', 'semester__semester', 'student__batch__start', 'student__branch__code')
+    list_display = ('get_name', 'get_roll_no', 'get_semester', 'get_batch', 'get_branch', 'status')
+    list_filter = ('student__roll_no', 'semester__semester',
+                   'student__batch__start', 'student__branch__code',
+                   SemesterInstanceReappearListFilter,)
 
     change_list_template = 'semester/semester_instance_change_list.html'
+
+    @display(ordering='name', description='Name')
+    def get_name(self, obj):
+        return obj.student.name
 
     @display(ordering='roll_no', description='Roll No')
     def get_roll_no(self, obj):
@@ -63,6 +89,14 @@ class SemesterInstanceAdmin(ImportExportModelAdmin):
     @display(ordering='semester', description='Semester')
     def get_semester(self, obj):
         return obj.semester.semester
+
+    @display(ordering='batch', description='Batch')
+    def get_batch(self, obj):
+        return obj.student.batch.start
+
+    @display(ordering='branch', description='Branch')
+    def get_branch(self, obj):
+        return obj.student.branch.code
 
     def student__roll_no(self, obj):
         return obj.student.roll_no
@@ -79,6 +113,7 @@ class SemesterInstanceAdmin(ImportExportModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         admin_urls = [
-            path('download/', SemesterInstanceTemplateDownloadView.as_view(), name='semester_instance_template_download'),
+            path('download/', SemesterInstanceTemplateDownloadView.as_view(),
+                 name='semester_instance_template_download'),
         ]
         return admin_urls + urls
