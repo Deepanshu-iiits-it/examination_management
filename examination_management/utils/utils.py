@@ -93,7 +93,7 @@ def create_result_excel(path, subjects, students, semester, branch_name, batch_s
     sheet.cell(row=6, column=3).font = Font(name="Times New Roman", size=10)
     sheet.cell(row=6, column=3).alignment = Alignment(textRotation=90, horizontal='center', vertical='center')
     sheet.cell(row=6, column=4).value = "Father's Name"
-    sheet.cell(row=6, column=3).font = Font(name="Times New Roman", size=10)
+    sheet.cell(row=6, column=4).font = Font(name="Times New Roman", size=10)
     sheet.cell(row=6, column=4).alignment = Alignment(textRotation=90, horizontal='center', vertical='center')
 
     subject_codes = sorted(list(subjects.keys()))
