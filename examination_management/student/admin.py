@@ -9,7 +9,7 @@ from examination_management.batch.models import Batch
 from examination_management.branch.models import Branch
 from examination_management.student.api.v1.views import StudentTemplateDownloadView, StudentResultTemplateDownloadView, \
     StudentDMCDownloadView
-from examination_management.student.models import Student
+from examination_management.student.models import Student, SerialNo
 
 
 class StudentResource(resources.ModelResource):
@@ -21,6 +21,7 @@ class StudentResource(resources.ModelResource):
         exclude = ('id',)
         import_id_fields = ('roll_no',)
 
+admin.site.register(SerialNo)
 
 @admin.register(Student)
 class StudentAdmin(ImportExportModelAdmin):

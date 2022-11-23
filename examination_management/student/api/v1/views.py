@@ -14,7 +14,7 @@ from examination_management.batch.models import Batch
 from examination_management.branch.models import Branch
 from examination_management.subject.models import Subject
 from examination_management.student.api.v1.serializers import StudentSerializer, StudentDetailSerializer
-from examination_management.student.models import Student
+from examination_management.student.models import Student, SerialNo
 from examination_management.utils.utils import create_empty_excel, create_result_excel, get_roman
 
 
@@ -277,6 +277,14 @@ class StudentDMCDownloadView(GenericAPIView):
 
         subjects, students = _get_semester_data(semester, branch, batch)
 
+        serialno = SerialNo.objects.filter()[0]
+        serial_no = serialno.serial_no
+        new_serial_no = serial_no + len(students)
+        print(serial_no, new_serial_no)
+        serialno.serial_no = new_serial_no
+        serialno.save()
+        # serialno = serialno.set(serial_no = new_serial_no)
+
         title = f'DMC Semester {semester} Branch {branch} Batch {batch}.pdf'
         full_branch = Branch.objects.get(code=branch).branch
         year = batch + semester // 2
@@ -291,7 +299,8 @@ class StudentDMCDownloadView(GenericAPIView):
             'title': title,
             'branch': full_branch,
             'semester': get_roman(semester),
-            'session': f'Nov./Dec., {year}' if semester % 2 else f'May./June., {year}'
+            'session': f'Nov./Dec., {year}' if semester % 2 else f'May./June., {year}',
+            'serialno': serial_no,
         }
         template = get_template(template_path)
 

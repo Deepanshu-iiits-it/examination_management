@@ -26,7 +26,8 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
                                  null=True, related_name='semester_semester_instance')
     student = models.ForeignKey('student.Student', on_delete=models.SET_NULL, blank=True,
                                 null=True, related_name='student_semester_instance')
-    elective = models.ManyToManyField('subject.Subject', related_name='elective_semester_instance')
+    elective = models.ManyToManyField('subject.Subject',blank=True,
+                                null=True, related_name='elective_semester_instance')
     
     STATUS_CHOICES = (('A', 'Appearing'), ('P', 'Passed'), ('R', 'Reappear'))
     status = models.CharField(choices=STATUS_CHOICES, max_length=1, default='A')
@@ -74,7 +75,7 @@ class SemesterInstance(StatusMixin, TimeStampedModel):
         safe_status = 'A'
         if not has_reappear:
             try:
-                semester_instances = SemesterInstance.objects.get(student=self.student, semester__semester__gt=self.semester.semester)
+                semester_instances = SemesterInstance.objects.filter(student=self.student, semester__semester__gt=self.semester.semester)
                 if len(semester_instances.all()):
                     safe_status = 'P'
             except SemesterInstance.DoesNotExist:

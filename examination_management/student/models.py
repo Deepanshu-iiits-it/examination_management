@@ -15,3 +15,6 @@ class Student(StatusMixin, TimeStampedModel):
 
     def __str__(self):
         return str(self.roll_no)
+
+class SerialNo(StatusMixin, TimeStampedModel):
+    serial_no = models.IntegerField(_("Serial No"), default = 2022)
