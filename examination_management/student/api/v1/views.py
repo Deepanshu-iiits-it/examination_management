@@ -280,10 +280,9 @@ class StudentDMCDownloadView(GenericAPIView):
         serialno = SerialNo.objects.filter()[0]
         serial_no = serialno.serial_no
         new_serial_no = serial_no + len(students)
-        print(serial_no, new_serial_no)
+        # print(serial_no, new_serial_no)
         serialno.serial_no = new_serial_no
         serialno.save()
-        # serialno = serialno.set(serial_no = new_serial_no)
 
         title = f'DMC Semester {semester} Branch {branch} Batch {batch}.pdf'
         full_branch = Branch.objects.get(code=branch).branch
